@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="日語道場">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11141C" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>13・14課 日語道場</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,6 +183,24 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .st{border:2px solid var(--line);border-radius:14px;padding:10px 4px;background:var(--surface)}
 .st b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
 .st span{font-size:.78rem;color:var(--muted)}
+/* ---------- 錯題本 ---------- */
+.furi b{color:var(--bad);font-variant-numeric:tabular-nums}
+.bk-title{margin:0;font-family:var(--jp);font-size:1.25rem;font-weight:900}
+.bk-head{padding:4px 0 16px;display:grid;gap:12px}.bk-head p{margin:0;color:var(--muted)}
+.bk{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:grid;gap:8px;min-width:0}
+.bk-meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{background:var(--ai-soft);color:var(--ai);font-weight:700;font-size:.78rem;border-radius:99px;padding:2px 10px}
+.miss{color:var(--bad);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.bk-q{font-family:var(--jp);font-size:1.08rem;line-height:2;overflow-wrap:anywhere}
+.bk-q .bj{font-size:1.4rem}
+.bk-a{background:var(--ok-soft);border-radius:10px;padding:6px 10px;font-family:var(--jp);line-height:2;overflow-wrap:anywhere}
+.bk-a b{font-family:var(--zh);color:var(--ok);font-size:.8rem;margin-right:6px}
+.bk-ex{font-size:.9rem;color:var(--muted)}
+.bk-rm{justify-self:start;background:none;border:0;color:var(--ai);font-weight:700;padding:4px 0}
+.bk-empty{text-align:center;padding:56px 0}
+.bk-empty .mark{width:96px;height:96px;margin:0 auto 14px;border-radius:22px;background:var(--sunk);color:var(--muted);display:grid;place-items:center;font-family:var(--jp);font-size:2.4rem;font-weight:900}
+.bk-empty h3{font-family:var(--jp);margin:0 0 4px}.bk-empty p{color:var(--muted);margin:0}
+@media (max-width:430px){.brand span:last-child{display:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -184,6 +211,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <div class="brand"><span class="hanko">道</span><span>13・14課 日語道場</span></div>
     <div class="stat streak" title="連續天數"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.4-5.2.2 1.7.9 2.8 2.1 3.2C11 8 11 5 12 2z"/></svg><span id="sStreak">0</span></div>
     <div class="stat xp" title="經驗值"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span id="sXp">0</span></div>
+    <button class="furi" id="bookBtn" title="答錯的題目">錯題本 <b id="bookN">0</b></button>
     <button class="furi" id="furiBtn" aria-pressed="true" title="顯示／隱藏假名標音">ふりがな</button>
   </div></header>
   <div class="wrap" id="pathRoot"></div>
@@ -204,6 +232,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </div>
 
 <div id="result" hidden><div class="wrap result" id="resBody"></div></div>
+
+<div id="book" hidden>
+  <div class="lbar"><div class="wrap">
+    <button class="x" id="bookBack" aria-label="回到課程"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <h2 class="bk-title">錯題本</h2>
+  </div></div>
+  <div class="wrap" id="bookBody"></div>
+</div>
 
 <div class="backdrop" id="bd" hidden></div>
 <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true"><div class="wrap" id="sheetBody"></div></div>
@@ -512,6 +548,7 @@ const LMAP=Object.fromEntries(ALL.map(l=>[l.id,l]));
 const KEY='jp1314-dojo-v1';
 let S={xp:0,done:{},wrong:[],streak:0,last:'',furi:true};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(S,s)}catch(e){}
+S.wrong=(S.wrong||[]).map(w=>typeof w==='string'?{k:w,n:1,t:Date.now()}:w);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const day=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 
@@ -548,14 +585,14 @@ function buildLesson(l){
   if(l.kind==='te')return pick(VB.filter(v=>v.r!=='します'||true),10).map(teQ);
   if(l.kind==='custom')return l.id==='reading'?customQs(l.id):pick(customQs(l.id),Math.min(10,Q[l.id].length));
   if(l.kind==='mix'){const ids=['want','purpose','someone','request','progress','conv13','conv14'];return shuffle([...pick(ids.flatMap(customQs),9),teQ(pick(VB,1)[0]),groupQ(pick(VB,1)[0])]).slice(0,12)}
-  if(l.kind==='review'){const qs=shuffle(S.wrong).map(byKey).filter(Boolean).slice(0,12);
+  if(l.kind==='review'){const qs=shuffle(S.wrong.slice().sort((a,b)=>b.n-a.n).slice(0,12)).map(w=>byKey(w.k)).filter(Boolean);
     return qs.length?qs:pick(['want','purpose','someone','request','progress'].flatMap(customQs),10)}
   return[]}
 
 /* ================= home ================= */
 function nextId(){const n=ALL.find(l=>!S.done[l.id]&&l.kind!=='review');return n?n.id:'review'}
 function renderHome(){
-  $('#sStreak').textContent=S.streak;$('#sXp').textContent=S.xp;
+  $('#sStreak').textContent=S.streak;$('#sXp').textContent=S.xp;$('#bookN').textContent=S.wrong.length;
   document.body.classList.toggle('nofuri',!S.furi);$('#furiBtn').setAttribute('aria-pressed',String(!!S.furi));
   const nx=nextId(),OFF=[0,46,70,46,0,-46,-70,-46];
   $('#pathRoot').innerHTML=UNITS.map(u=>`<div class="unit ${u.cls}"><small>${u.small}</small><h2 class="jp">${rb(u.title)}</h2><p>${u.sub}</p></div>
@@ -580,13 +617,15 @@ $('#bd').addEventListener('click',closeSheet);
 let L=null;
 function startLesson(id){
   const qs=buildLesson(LMAP[id]);
-  L={id,queue:qs,total:qs.length,doneCount:0,hearts:5,correct:0,tries:0,start:Date.now(),requeued:new Set(),cur:null,phase:'answer',sel:null};
-  $('#home').hidden=true;$('#result').hidden=true;$('#lesson').hidden=false;window.scrollTo(0,0);nextQ()}
+  L={id,queue:qs,total:qs.length,doneCount:0,hearts:5,correct:0,tries:0,start:Date.now(),requeued:[],cur:null,phase:'answer',sel:null};
+  show('lesson');window.scrollTo(0,0);nextQ()}
 function setProg(){$('#progBar').style.width=(L.doneCount/L.total*100)+'%';$('#hearts').textContent=L.hearts}
 function nextQ(){
   setProg();
   if(!L.queue.length)return finish(true);
-  L.cur=L.queue.shift();L.phase='answer';L.sel=null;
+  L.cur=L.queue.shift();renderQ()}
+function renderQ(){
+  setProg();L.phase='answer';L.sel=null;L.dead=false;
   const f=$('#lfoot');f.className='lfoot';$('#fb').innerHTML='';
   const go=$('#go');go.className='btn wide';go.textContent='檢查';go.disabled=true;
   const q=L.cur,body=$('#qbody');
@@ -620,6 +659,7 @@ function nextQ(){
     body.querySelector('.match').onclick=e=>{const t=e.target.closest('.tile');if(t)tapMatch(t)};
     go.textContent='配對完成後繼續';
   }
+  persist();
 }
 function drawLine(){const q=L.cur;$('#aline').innerHTML=L.sel.map(i=>`<button class="chip" data-i="${i}">${rb(q._t[i])}</button>`).join('');$('#go').disabled=!L.sel.length}
 function selectMc(i){if(L.phase!=='answer')return;L.sel=i;
@@ -646,10 +686,11 @@ function check(){
   else if(q.t==='build'){const got=L.sel.map(i=>base(q._t[i])).join('').replace(/\s/g,''),want=q.a.map(base).join('').replace(/\s/g,'');ok=got===want;
     ansHtml=rb(q.a.join(' '));speak(q.a.join(''))}
   L.tries++;L.phase='done';
-  if(ok){L.correct++;L.doneCount++;if(q.key&&S.wrong.includes(q.key)&&LMAP[L.id].kind==='review'){S.wrong=S.wrong.filter(k=>k!==q.key)}}
-  else{L.hearts--;if(q.key&&!S.wrong.includes(q.key))S.wrong.push(q.key);
-    if(!L.requeued.has(q)){L.requeued.add(q);L.queue.push(q)}else L.doneCount++;}
-  save();setProg();showFb(ok,ok?pickPraise():'正確答案：',ansHtml,q.ex)}
+  if(ok){L.correct++;L.doneCount++;if(q.key&&LMAP[L.id].kind==='review')S.wrong=S.wrong.filter(w=>w.k!==q.key)}
+  else{L.hearts--;
+    if(q.key){const w=S.wrong.find(w=>w.k===q.key);if(w){w.n++;w.t=Date.now()}else S.wrong.push({k:q.key,n:1,t:Date.now()})}
+    if(!L.requeued.includes(q.key)){L.requeued.push(q.key);L.queue.push(q)}else L.doneCount++;}
+  save();setProg();persist();showFb(ok,ok?pickPraise():'正確答案：',ansHtml,q.ex)}
 const PRAISE=['すばらしい！','いいですね！','正解！','その調子！','よくできました！'];
 const pickPraise=()=>PRAISE[Math.random()*PRAISE.length|0];
 function showFb(ok,title,ans,why){
@@ -661,7 +702,7 @@ function showFb(ok,title,ans,why){
 $('#go').addEventListener('click',()=>{if(!L)return;
   if(L.phase==='answer'&&L.cur.t!=='match')return check();
   if(L.phase==='fb'){if(L.dead)return finish(false);nextQ()}});
-$('#quit').addEventListener('click',()=>{L=null;try{speechSynthesis.cancel()}catch(e){}$('#lesson').hidden=true;$('#home').hidden=false;renderHome()});
+$('#quit').addEventListener('click',()=>{L=null;try{speechSynthesis.cancel()}catch(e){}renderHome();show('home')});
 document.addEventListener('keydown',e=>{if(!L||$('#lesson').hidden)return;
   if(e.key==='Enter'){e.preventDefault();$('#go').click();return}
   if(L.phase==='answer'&&/^[1-4]$/.test(e.key)&&(L.cur.t==='mc'||L.cur.t==='fill')){const i=+e.key-1;if(i<(L.cur.c.length))selectMc(i)}});
@@ -671,17 +712,51 @@ function finish(won){
   let gained=0;
   if(won){gained=10+L.hearts*2;S.xp+=gained;const stars=L.hearts>=5?3:L.hearts>=3?2:1;S.done[L.id]=Math.max(S.done[L.id]||0,stars);
     const t=day(),y=day(new Date(Date.now()-864e5));if(S.last!==t){S.streak=S.last===y?S.streak+1:1;S.last=t}save()}
-  $('#lesson').hidden=true;$('#result').hidden=false;window.scrollTo(0,0);
+  show('result');window.scrollTo(0,0);
   $('#resBody').innerHTML=won?`<div class="seal">合格</div><h2>よくできました！</h2><p>${LMAP[L.id].name}　完成</p>
     <div class="tiles3"><div class="st"><b style="color:var(--gold)">+${gained}</b><span>經驗值</span></div><div class="st"><b style="color:var(--ok)">${acc}%</b><span>正確率</span></div><div class="st"><b>${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</b><span>用時</span></div></div>
     <button class="btn wide" id="resGo">繼續</button>`
    :`<div class="seal fail">再</div><h2>ハートが なくなりました</h2><p>愛心用完了。看一下筆記再試一次吧。</p>
     <div class="row" style="justify-content:center"><button class="btn" id="resRetry">再試一次</button><button class="btn ghost" id="resGo">回到課程</button></div>`;
   const id=L.id;L=null;
-  $('#resGo').onclick=()=>{$('#result').hidden=true;$('#home').hidden=false;renderHome()};
+  $('#resGo').onclick=()=>{renderHome();show('home')};
   const r=$('#resRetry');if(r)r.onclick=()=>startLesson(id)}
 
-renderHome();
+/* ================= 錯題本 ================= */
+const CAT=k=>k.startsWith('c:')?((LMAP[k.split(':')[1]]||{}).name||'文法'):k.startsWith('w:')?'單字':k.startsWith('g:')?'動詞分類':'て形';
+const qText=q=>q.t==='fill'?rb(q.s.replace('＿＿','（　）')):q.t==='build'?esc(q.zh):rb(q.q)+(q.jp?`<div class="bj">${q.noruby?esc(q.jp):rb(q.jp)}</div>`:'');
+const aText=q=>q.t==='fill'?rb(q.s.replace('＿＿',q.a)):q.t==='build'?rb(q.a.join(' ')):rb(q.a);
+function renderBook(){
+  const items=S.wrong.map(w=>({w,q:byKey(w.k)})).filter(x=>x.q).sort((a,b)=>b.w.n-a.w.n||b.w.t-a.w.t);
+  $('#bookBody').innerHTML=items.length?`<div class="bk-head"><p>共 ${items.length} 題答錯過的題目，錯最多次的排在前面。複習時答對一次就會移除。</p><button class="btn wide" id="bookStart">開始複習（${Math.min(12,items.length)} 題）</button></div>`+
+    items.map(({w,q})=>`<article class="bk"><div class="bk-meta"><span class="pill">${CAT(w.k)}</span><span class="miss">錯 ${w.n} 次</span></div>
+      <div class="bk-q">${qText(q)}</div><div class="bk-a"><b>答案</b>${aText(q)}</div>${q.ex?`<div class="bk-ex">${rb(q.ex)}</div>`:''}
+      <button class="bk-rm" data-rm="${esc(w.k)}">我學會了，移除</button></article>`).join('')
+   :`<div class="bk-empty"><div class="mark">空</div><h3>還沒有錯題</h3><p>練習時答錯的題目會自動存在這裡，之後可以集中複習。</p></div>`;
+}
+$('#bookBtn').addEventListener('click',()=>{renderBook();show('book');window.scrollTo(0,0)});
+$('#bookBack').addEventListener('click',()=>{renderHome();show('home')});
+$('#bookBody').addEventListener('click',e=>{
+  const rm=e.target.closest('[data-rm]');if(rm){S.wrong=S.wrong.filter(w=>w.k!==rm.dataset.rm);save();renderBook();return}
+  if(e.target.closest('#bookStart'))startLesson('review')});
+
+/* ================= views & resume ================= */
+let VIEW='home';
+function show(v){VIEW=v;['home','lesson','result','book'].forEach(x=>$('#'+x).hidden=x!==v);persist()}
+const snap=()=>({view:VIEW,L:L?JSON.parse(JSON.stringify(L,(k,v)=>v instanceof Element?null:v)):null,y:window.scrollY});
+function persist(){try{sessionStorage.setItem(KEY+':view',JSON.stringify(snap()))}catch(e){}}
+window.addEventListener('pagehide',persist);
+function boot(data){
+  let d=data&&data.view?data:null;
+  if(!d){try{d=JSON.parse(sessionStorage.getItem(KEY+':view')||'null')}catch(e){}}
+  renderHome();
+  if(d&&d.view==='lesson'&&d.L&&d.L.cur){L=d.L;show('lesson');renderQ()}
+  else if(d&&d.view==='book'){renderBook();show('book')}
+  else show('home');
+  if(d&&d.y&&d.view!=='lesson')requestAnimationFrame(()=>window.scrollTo(0,d.y));
+}
+try{window.claude?.hot?.snapshot?.(snap)}catch(e){}
+window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
 </script>
 
