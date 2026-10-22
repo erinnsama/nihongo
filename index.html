@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>13・14課 日語道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one centered study column; home = zigzag lesson path, lesson = top bar / question / sticky answer footer */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E6EAF2; --line:#D3D9E6;
+  --ink:#1B2233; --muted:#5E6880;
+  --ai:#2F48A8; --ai-deep:#1F3280; --ai-soft:#DCE3FA;   /* 藍 indigo: primary */
+  --shu:#E2552F; --shu-soft:#FCE4DC;                     /* 朱 vermilion: streak, hearts */
+  --ok:#23955A; --ok-deep:#18723F; --ok-soft:#D9F2E4;
+  --bad:#D23F3F; --bad-deep:#A52B2B; --bad-soft:#FBE0E0;
+  --gold:#E8A317;
+  --jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11141C; --surface:#1A1F2C; --sunk:#232A3A; --line:#2F3850;
+  --ink:#E7EBF5; --muted:#9AA4BD;
+  --ai:#7F96FF; --ai-deep:#4D63CC; --ai-soft:#25305A;
+  --shu:#FF7A55; --shu-soft:#43261E;
+  --ok:#3CC47D; --ok-deep:#24894F; --ok-soft:#173A28;
+  --bad:#FF6B6B; --bad-deep:#B83B3B; --bad-soft:#401E22;
+  --gold:#F5BA3A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11141C; --surface:#1A1F2C; --sunk:#232A3A; --line:#2F3850;
+  --ink:#E7EBF5; --muted:#9AA4BD;
+  --ai:#7F96FF; --ai-deep:#4D63CC; --ai-soft:#25305A;
+  --shu:#FF7A55; --shu-soft:#43261E;
+  --ok:#3CC47D; --ok-deep:#24894F; --ok-soft:#173A28;
+  --bad:#FF6B6B; --bad-deep:#B83B3B; --bad-soft:#401E22;
+  --gold:#F5BA3A; color-scheme:dark}
+
+*{box-sizing:border-box}html,body{height:100%}body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--zh);font-size:16px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:600px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.jp{font-family:var(--jp)}
+ruby rt{font-size:.5em;color:var(--muted);font-family:var(--jp)}
+body.nofuri ruby rt{visibility:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.tile:focus-visible{outline:3px solid var(--ai);outline-offset:2px}
+svg{display:block}
+
+/* ---------- home ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{font-family:var(--jp);font-weight:900;font-size:1.15rem;letter-spacing:.02em;margin-right:auto;display:flex;align-items:center;gap:8px}
+.hanko{width:30px;height:30px;border-radius:7px;background:var(--shu);color:#fff;display:grid;place-items:center;font-size:.95rem;font-weight:900;transform:rotate(-6deg)}
+.stat{display:flex;align-items:center;gap:4px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat.streak{color:var(--shu)} .stat.xp{color:var(--gold)}
+.furi{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:2px 10px;font-family:var(--jp);font-size:.85rem;font-weight:700}
+.furi[aria-pressed="true"]{border-color:var(--ai);color:var(--ai);background:var(--ai-soft)}
+
+.unit{margin-top:22px;border-radius:16px;background:var(--ai);color:#fff;padding:14px 18px;box-shadow:0 4px 0 var(--ai-deep)}
+.unit.u2{background:var(--ok);box-shadow:0 4px 0 var(--ok-deep)}
+.unit.u3{background:var(--shu);box-shadow:0 4px 0 color-mix(in srgb,var(--shu) 70%,#000)}
+.unit small{display:block;font-size:.78rem;letter-spacing:.12em;opacity:.85;text-transform:uppercase}
+.unit h2{margin:2px 0 0;font-family:var(--jp);font-size:1.25rem;font-weight:900;text-wrap:balance}
+.unit p{margin:0;font-size:.9rem;opacity:.9}
+.path{display:flex;flex-direction:column;align-items:center;gap:18px;padding:26px 0 8px}
+.node{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0}
+.disc{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:var(--jp);font-weight:900;font-size:1.7rem;
+  background:var(--sunk);color:var(--muted);box-shadow:0 6px 0 var(--line);transition:transform .1s}
+.node:active .disc{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.node.done .disc{background:var(--gold);color:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--gold) 65%,#000)}
+.node.next .disc{background:var(--ai);color:#fff;box-shadow:0 6px 0 var(--ai-deep);animation:bob 1.6s ease-in-out infinite}
+.node .lbl{font-weight:700;font-size:.88rem;max-width:150px;text-align:center;line-height:1.3}
+.node .stars{font-size:.75rem;color:var(--gold);height:1em;letter-spacing:2px}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.foot-note{color:var(--muted);font-size:.82rem;text-align:center;padding:28px 0 40px}
+
+/* ---------- sheet ---------- */
+.backdrop{position:fixed;inset:0;background:rgb(10 14 25 / .45);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-height:86%;overflow:auto;background:var(--surface);border-radius:20px 20px 0 0;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgb(0 0 0 / .2)}
+.sheet .wrap{padding-block:20px}
+.sheet h3{margin:0;font-family:var(--jp);font-size:1.4rem;font-weight:900}
+.sheet .kind{color:var(--ai);font-weight:700;font-size:.8rem;letter-spacing:.1em}
+.sheet .desc{color:var(--muted);margin:4px 0 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.note{margin-top:18px;border-top:2px dashed var(--line);padding-top:6px}
+.note h4{font-family:var(--jp);font-size:1.05rem;margin:16px 0 4px;color:var(--ai)}
+.note p,.note li{margin:4px 0}
+.note .ex{font-family:var(--jp);font-size:1.08rem;background:var(--sunk);border-radius:10px;padding:8px 12px;margin:6px 0}
+.note .ex span{display:block;font-family:var(--zh);font-size:.85rem;color:var(--muted)}
+.note .warn{border-left:4px solid var(--shu);background:var(--shu-soft);padding:8px 12px;border-radius:0 10px 10px 0;margin:10px 0}
+.tbl{overflow-x:auto}
+.note table{border-collapse:collapse;width:100%;font-size:.95rem}
+.note td,.note th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.note th{color:var(--muted);font-weight:500;font-size:.8rem}
+.note td.j{font-family:var(--jp);font-size:1.05rem;white-space:nowrap}
+.dlg{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:start}
+.dlg b{font-family:var(--jp);color:var(--muted);font-weight:700;white-space:nowrap}
+.dlg div{font-family:var(--jp);font-size:1.05rem;min-width:0}
+.dlg div span{display:block;font-family:var(--zh);font-size:.82rem;color:var(--muted)}
+
+/* ---------- buttons ---------- */
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:700;font-size:1rem;letter-spacing:.05em;background:var(--ai);color:#fff;box-shadow:0 4px 0 var(--ai-deep);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ai-deep)}
+.btn.ghost{background:var(--surface);color:var(--ai);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.btn.wide{width:100%}
+.btn:disabled{background:var(--sunk);color:var(--muted);box-shadow:0 4px 0 var(--line);cursor:default;transform:none}
+.btn.ok{background:var(--ok);box-shadow:0 4px 0 var(--ok-deep)}
+.btn.bad{background:var(--bad);box-shadow:0 4px 0 var(--bad-deep)}
+
+/* ---------- lesson ---------- */
+#lesson{display:flex;flex-direction:column;min-height:100%}
+.lbar .wrap{display:flex;align-items:center;gap:14px;padding-block:14px}
+.x{border:0;background:none;color:var(--muted);padding:4px}
+.prog{flex:1;height:16px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok);border-radius:99px;transition:width .35s;box-shadow:inset 0 -4px 0 rgb(0 0 0 / .1)}
+.hearts{display:flex;align-items:center;gap:4px;color:var(--shu);font-weight:700;font-variant-numeric:tabular-nums}
+.qmain{flex:1;padding-block:8px 24px}
+.qtype{font-size:.82rem;font-weight:700;color:var(--ai);letter-spacing:.08em;margin:6px 0 2px}
+.qhead{font-size:1.3rem;font-weight:700;margin:0 0 16px;text-wrap:balance}
+.prompt{display:flex;align-items:center;gap:12px;margin:8px 0 22px}
+.big{font-family:var(--jp);font-size:2rem;font-weight:700;line-height:1.7;min-width:0;overflow-wrap:anywhere}
+.sentence{font-family:var(--jp);font-size:1.35rem;line-height:2.2;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 16px;margin-bottom:20px;min-width:0}
+.blank{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--ai);text-align:center;color:var(--ai);padding:0 4px;line-height:1.3}
+.say{flex:none;width:46px;height:46px;border-radius:12px;border:0;background:var(--ai);color:#fff;display:grid;place-items:center;box-shadow:0 4px 0 var(--ai-deep)}
+.say:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ai-deep)}
+.say.sm{width:34px;height:34px;border-radius:9px;box-shadow:0 3px 0 var(--ai-deep)}
+.choices{display:grid;gap:10px}
+.choices.two{grid-template-columns:1fr 1fr}
+.tile{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px 14px;
+  box-shadow:0 4px 0 var(--line);font-size:1.05rem;min-height:56px;transition:transform .08s}
+.tile:active{transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.tile .k{flex:none;width:26px;height:26px;border:2px solid var(--line);border-radius:8px;display:grid;place-items:center;font-size:.78rem;color:var(--muted);font-weight:700}
+.tile .t{min-width:0;overflow-wrap:anywhere}
+.tile.jpt .t{font-family:var(--jp);font-size:1.2rem}
+.tile.sel{border-color:var(--ai);background:var(--ai-soft);box-shadow:0 4px 0 var(--ai)}
+.tile.sel .k{border-color:var(--ai);color:var(--ai)}
+.tile.right{border-color:var(--ok);background:var(--ok-soft);box-shadow:0 4px 0 var(--ok)}
+.tile.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad)}
+.tile.gone{opacity:.35;pointer-events:none;box-shadow:none}
+.tile.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start;min-width:0}
+.match .tile{justify-content:center;text-align:center;min-height:62px}
+.answer-line{min-height:64px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;padding:6px 0 10px;margin-bottom:20px;align-content:flex-start}
+.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{font-family:var(--jp);font-size:1.15rem;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:6px 12px;box-shadow:0 3px 0 var(--line);line-height:1.9}
+.chip.used{visibility:hidden}
+.passage{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:4px 14px;margin-bottom:16px}
+.passage summary{cursor:pointer;font-weight:700;color:var(--ai);padding:8px 0}
+.passage div{font-family:var(--jp);font-size:1.02rem;line-height:2.1;padding-bottom:10px;max-height:40vh;overflow:auto}
+
+.lfoot{position:sticky;bottom:0;border-top:2px solid var(--line);background:var(--bg);padding-bottom:env(safe-area-inset-bottom,0px)}
+.lfoot.ok{background:var(--ok-soft);border-color:transparent}
+.lfoot.bad{background:var(--bad-soft);border-color:transparent}
+.lfoot .wrap{padding-block:16px;display:grid;gap:12px}
+.fb{display:none}
+.lfoot.ok .fb,.lfoot.bad .fb{display:block}
+.fb h4{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:8px}
+.lfoot.ok .fb h4{color:var(--ok)} .lfoot.bad .fb h4{color:var(--bad)}
+.fb .ans{font-family:var(--jp);font-size:1.15rem;margin-top:4px}
+.fb .why{font-size:.92rem;margin-top:4px;color:var(--ink)}
+
+/* ---------- result ---------- */
+.result{text-align:center;padding-block:48px 32px}
+.result .seal{width:120px;height:120px;margin:0 auto 16px;border-radius:24px;background:var(--gold);color:#fff;display:grid;place-items:center;font-family:var(--jp);font-size:3rem;font-weight:900;transform:rotate(-8deg);box-shadow:0 8px 0 color-mix(in srgb,var(--gold) 65%,#000)}
+.result .seal.fail{background:var(--bad);box-shadow:0 8px 0 var(--bad-deep)}
+.result h2{font-family:var(--jp);font-size:1.9rem;margin:8px 0 2px}
+.result p{color:var(--muted);margin:0 0 24px}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+.st{border:2px solid var(--line);border-radius:14px;padding:10px 4px;background:var(--surface)}
+.st b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.st span{font-size:.78rem;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="home">
+  <header class="top"><div class="wrap">
+    <div class="brand"><span class="hanko">道</span><span>13・14課 日語道場</span></div>
+    <div class="stat streak" title="連續天數"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.4-5.2.2 1.7.9 2.8 2.1 3.2C11 8 11 5 12 2z"/></svg><span id="sStreak">0</span></div>
+    <div class="stat xp" title="經驗值"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span id="sXp">0</span></div>
+    <button class="furi" id="furiBtn" aria-pressed="true" title="顯示／隱藏假名標音">ふりがな</button>
+  </div></header>
+  <div class="wrap" id="pathRoot"></div>
+  <div class="wrap foot-note">課本：第13課 別々に お願いします／第14課 みどり町まで お願いします<br>進度只存在這個瀏覽器裡。</div>
+</div>
+
+<div id="lesson" hidden>
+  <div class="lbar"><div class="wrap">
+    <button class="x" id="quit" aria-label="離開練習"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="prog"><i id="progBar"></i></div>
+    <div class="hearts"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.3C1 8.3 3.1 4.5 6.9 4.5c2.1 0 3.8 1.2 5.1 3 1.3-1.8 3-3 5.1-3 3.8 0 5.9 3.8 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg><span id="hearts">5</span></div>
+  </div></div>
+  <div class="qmain"><div class="wrap" id="qbody"></div></div>
+  <div class="lfoot" id="lfoot"><div class="wrap">
+    <div class="fb" id="fb"></div>
+    <button class="btn wide" id="go" disabled>檢查</button>
+  </div></div>
+</div>
+
+<div id="result" hidden><div class="wrap result" id="resBody"></div></div>
+
+<div class="backdrop" id="bd" hidden></div>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true"><div class="wrap" id="sheetBody"></div></div>
+
+<script>
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const rb=s=>String(s).replace(/\{([^|}]+)\|([^}]+)\}/g,'<ruby>$1<rt>$2</rt></ruby>').replace(/\n/g,'<br>');
+const plain=s=>String(s).replace(/\{([^|}]+)\|([^}]+)\}/g,'$2').replace(/[\[\]～＿]/g,'');
+const base=s=>String(s).replace(/\{([^|}]+)\|([^}]+)\}/g,'$1');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SPK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const canSpeak='speechSynthesis' in window;
+function speak(t){try{if(!canSpeak)return;const u=new SpeechSynthesisUtterance(plain(t));u.lang='ja-JP';u.rate=.9;
+  const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('ja'));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+const sayBtn=(t,sm)=>canSpeak?`<button class="say${sm?' sm':''}" data-say="${esc(t)}" aria-label="朗讀">${SPK}</button>`:'';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){e.stopPropagation();speak(b.dataset.say)}});
+const jw=w=>w.k?`{${w.k}|${w.r}}`:w.r;
+
+/* ================= vocabulary ================= */
+const V=(k,r,zh,g)=>({k,r,zh,g});
+const v13a=[V('遊びます','あそびます','玩',1),V('泳ぎます','およぎます','游泳',1),V('迎えます','むかえます','迎接',2),V('疲れます','つかれます','疲累',2),
+ V('結婚します','けっこんします','結婚',3),V('買い物します','かいものします','購物、買東西',3),V('食事します','しょくじします','吃飯、用餐',3),V('散歩します','さんぽします','散步',3),
+ V('大変[な]','たいへん[な]','很（累）、相當（辛苦）'),V('欲しい','ほしい','想要'),V('広い','ひろい','寬'),V('狭い','せまい','窄'),
+ V('','のどが かわきます','口渴'),V('','おなかが すきます','肚子餓')];
+const v13b=[V('','プール','游泳池'),V('川','かわ','河流'),V('美術','びじゅつ','美術'),V('釣り','つり','釣魚'),V('','スキー','滑雪'),V('週末','しゅうまつ','週末'),
+ V('[お]正月','[お]しょうがつ','新年'),V('','～ごろ','～左右（時間）'),V('何か','なにか','什麼（某樣東西）'),V('','どこか','哪裡（某個地方）'),
+ V('ご注文は？','ごちゅうもんは？','您要點什麼？'),V('定食','ていしょく','套餐'),V('牛どん','ぎゅうどん','牛肉蓋飯'),V('少々 お待ち ください','しょうしょう おまち ください','請稍等'),
+ V('','～で ございます','「です」的禮貌說法'),V('別々に','べつべつに','分別、各自'),V('','そう しましょう','就這麼辦吧')];
+const v14a=[V('','つけます','開（空調、電燈）',2),V('消します','けします','關（空調、電燈）',1),V('開けます','あけます','開（門、窗）',2),V('閉めます','しめます','關（門、窗）',2),
+ V('急ぎます','いそぎます','趕快、趕緊',1),V('待ちます','まちます','等',1),V('持ちます','もちます','拿',1),V('取ります','とります','取',1),V('手伝います','てつだいます','幫忙',1),
+ V('呼びます','よびます','叫',1),V('話します','はなします','說',1),V('使います','つかいます','使用',1),V('止めます','とめます','停止',2),V('見せます','みせます','給～看、出示',2),
+ V('教えます','おしえます','告訴（地址）、教',2),V('座ります','すわります','坐',1),V('立ちます','たちます','站立',1),V('入ります','はいります','進入（咖啡店に～）',1),
+ V('出ます','でます','離開（咖啡店を～）',2),V('降ります','ふります','下（雨が～）',1),V('','コピーします','影印',3)];
+const v14b=[V('電気','でんき','電燈、電氣'),V('','エアコン','空調'),V('','パスポート','護照'),V('名前','なまえ','姓名'),V('住所','じゅうしょ','地址'),V('地図','ちず','地圖'),
+ V('塩','しお','鹽'),V('砂糖','さとう','砂糖'),V('問題','もんだい','問題'),V('答え','こたえ','回答、解答'),V('読み方','よみかた','讀法、唸法'),V('～方','～かた','～的方法'),
+ V('','まっすぐ','直直地'),V('','ゆっくり','慢慢地、好好地'),V('','すぐ','馬上'),V('','また','再'),V('','あとで','等一下、稍候'),V('もう少し','もう すこし','再～一點'),
+ V('お釣り','おつり','零錢'),V('','さあ','那麼（催促、提議）'),V('','あれ？','咦？（驚訝）'),V('信号','しんごう','紅綠燈'),V('右','みぎ','右邊'),V('運転手','うんてんしゅ','司機')];
+const vCity=[V('博物館','はくぶつかん','博物館'),V('美術館','びじゅつかん','美術館'),V('図書館','としょかん','圖書館'),V('映画館','えいがかん','電影院'),V('動物園','どうぶつえん','動物園'),
+ V('植物園','しょくぶつえん','植物園'),V('遊園地','ゆうえんち','遊樂園'),V('お寺','おてら','寺廟'),V('神社','じんじゃ','神社'),V('教会','きょうかい','教會'),V('体育館','たいいくかん','體育館'),
+ V('公園','こうえん','公園'),V('大使館','たいしかん','大使館'),V('市役所','しやくしょ','市公所'),V('警察署','けいさつしょ','警察局'),V('交番','こうばん','派出所'),V('消防署','しょうぼうしょ','消防隊'),
+ V('駐車場','ちゅうしゃじょう','停車場'),V('高校','こうこう','高中'),V('中学校','ちゅうがっこう','國中'),V('小学校','しょうがっこう','小學'),V('幼稚園','ようちえん','幼稚園'),
+ V('肉屋','にくや','肉店'),V('パン屋','パンや','麵包店'),V('魚屋','さかなや','魚店'),V('八百屋','やおや','蔬菜店'),V('喫茶店','きっさてん','咖啡店'),V('','コンビニ','便利商店'),
+ V('','スーパー','超市'),V('','デパート','百貨公司')];
+const vStation=[V('切符売り場','きっぷうりば','售票處'),V('改札口','かいさつぐち','剪票口'),V('出口','でぐち','出口'),V('入口','いりぐち','入口'),V('東口','ひがしぐち','東出口'),
+ V('南口','みなみぐち','南出口'),V('','ホーム','月台'),V('売店','ばいてん','販賣部'),V('','コインロッカー','投幣式寄物櫃'),V('タクシー乗り場','タクシーのりば','計程車乘車處'),
+ V('バス停','バスてい','公車站'),V('特急','とっきゅう','特快列車'),V('急行','きゅうこう','急行列車'),V('普通','ふつう','普通列車'),V('時刻表','じこくひょう','時刻表'),
+ V('定期券','ていきけん','月票'),V('回数券','かいすうけん','回數票'),V('片道','かたみち','單程'),V('往復','おうふく','來回'),V('東京行き','とうきょういき','開往東京')];
+
+/* verbs for groups & て形 (k, r, group, isIku) */
+const VB=[['書きます','かきます',1],['行きます','いきます',1,1],['急ぎます','いそぎます',1],['飲みます','のみます',1],['呼びます','よびます',1],['帰ります','かえります',1],
+ ['買います','かいます',1],['待ちます','まちます',1],['貸します','かします',1],['遊びます','あそびます',1],['泳ぎます','およぎます',1],['話します','はなします',1],['消します','けします',1],
+ ['持ちます','もちます',1],['取ります','とります',1],['手伝います','てつだいます',1],['使います','つかいます',1],['座ります','すわります',1],['立ちます','たちます',1],
+ ['入ります','はいります',1],['降ります','ふります',1],['読みます','よみます',1],['曲がります','まがります',1],['撮ります','とります',1],['送ります','おくります',1],
+ ['食べます','たべます',2],['寝ます','ねます',2],['起きます','おきます',2],['借ります','かります',2],['見ます','みます',2],['います','います',2],['開けます','あけます',2],
+ ['閉めます','しめます',2],['止めます','とめます',2],['見せます','みせます',2],['教えます','おしえます',2],['出ます','でます',2],['迎えます','むかえます',2],['','つけます',2],
+ ['来ます','きます',3],['','します',3],['散歩します','さんぽします',3],['','コピーします',3],['勉強します','べんきょうします',3],['買い物します','かいものします',3]
+].map(([k,r,g,iku])=>({k,r,g,iku:!!iku}));
+const TE1={'い':'って','ち':'って','り':'って','み':'んで','び':'んで','に':'んで','き':'いて','ぎ':'いで','し':'して'};
+function teOf(stem,g,iku){if(g!==1)return stem+'て';const b=stem.slice(0,-1),l=stem.slice(-1);return iku?b+'って':b+TE1[l]}
+function teWord(v){const sk=v.k?v.k.replace(/ます$/,''):'',sr=v.r.replace(/ます$/,'');return{k:v.k?teOf(sk,v.g,v.iku):'',r:teOf(sr,v.g,v.iku)}}
+function teWrong(v){const s=(v.k||v.r).replace(/ます$/,''),b=s.slice(0,-1),c=teWord(v);const right=c.k||c.r;
+  const pool=v.g===1?[s+'て',b+'って',b+'んで',b+'いて',b+'いで',b+'して']:[s+'って',s+'んで',(s.length>1?s.slice(0,-1)+'って':s+'いて'),s+'いて'];
+  return shuffle([...new Set(pool)].filter(x=>x!==right&&x!==s)).slice(0,3)}
+const RULE={'い':'い・ち・り → って','ち':'い・ち・り → って','り':'い・ち・り → って','み':'み・び・に → んで','び':'み・び・に → んで','に':'み・び・に → んで','き':'き → いて','ぎ':'ぎ → いで','し':'し → して'};
+const E_ROW='えけげせぜてでねへべぺめれ';
+function groupWhy(v){const sr=v.r.replace(/ます$/,''),l=sr.slice(-1);
+  if(v.g===3)return'「します」「名詞＋します」和「来ます」是III類。';
+  if(v.g===1)return`ます前面是「${l}」（い段），屬於I類。`;
+  return E_ROW.includes(l)?`ます前面是「${l}」（え段），屬於II類。`:`ます前面是「${l}」雖然是い段，但它是II類，要特別記住。`}
+function teWhy(v){const sr=v.r.replace(/ます$/,''),l=sr.slice(-1);
+  if(v.iku)return'「行きます」是例外：不是「行いて」，而是「行って」。';
+  if(v.g===1)return`I類：ます形最後是「${l}」，規則是 ${RULE[l]}。`;
+  if(v.g===2)return'II類：直接把「ます」換成「て」。';
+  return'III類：ます形直接接「て」（します→して、来ます→来て）。'}
+
+/* ================= reading passages ================= */
+const PASS={
+ dog:{t:'犬の 生活（狗的生活）',x:`わたしは トモです。サントスさんの うちに います。わたしは {毎朝|まいあさ} {奥|おく}さんと {散歩|さんぽ}に {行|い}きます。8{時|じ}ごろ テレーザちゃんと {学校|がっこう}へ {行|い}きます。それから うちへ {帰|かえ}ります。そして、{奥|おく}さんと {買|か}い{物|もの}に {行|い}きます。{午後|ごご} {学校|がっこう}へ テレーザちゃんを {迎|むか}えに {行|い}きます。それから いっしょに {公園|こうえん}へ {遊|あそ}びに {行|い}きます。
+{週末|しゅうまつ}は テレーザちゃんの {学校|がっこう}と サントスさんの {会社|かいしゃ}は {休|やす}みです。サントスさんの {家族|かぞく}は {遠|とお}い {所|ところ}へ {車|くるま}で {遊|あそ}びに {行|い}きます。わたしも いっしょに {行|い}きます。とても {疲|つか}れます。
+サントスさんの うちに {猫|ねこ}も います。{猫|ねこ}は {毎日|まいにち} {何|なに}も しません。どこも {行|い}きません。わたしは {朝|あさ}から {晩|ばん}まで {忙|いそが}しいです。{休|やす}みが {全然|ぜんぜん} ありません。わたしは {猫|ねこ}と いっしょに {休|やす}みたいです。`},
+ mail:{t:'メール（電子郵件）',x:`マリアさん
+お{元気|げんき}ですか。{毎日|まいにち} {暑|あつ}いですね。わたしと {太郎|たろう}は {今|いま} {両親|りょうしん}の うちに います。{両親|りょうしん}の うちは {海|うみ}の {近|ちか}くに あります。{太郎|たろう}は {毎日|まいにち} {泳|およ}ぎに {行|い}きます。{時々|ときどき} {釣|つ}りも します。ここの {魚|さかな}は おいしいです。{週末|しゅうまつ}に {夫|おっと}も {来|き}ます。
+マリアさんも ジョゼさん、テレーザちゃんと いっしょに {遊|あそ}びに {来|き}て ください。{駅|えき}まで {車|くるま}で {迎|むか}えに {行|い}きます。いつ {来|き}ますか。メールを ください。{待|ま}って います。
+{山田友子|やまだともこ}`}};
+const WHO=['A {山田友子|やまだともこ}','B {山田太郎|やまだたろう}','C {山田一郎|やまだいちろう}（友子的先生）','D マリア・サントス'];
+
+/* ================= hand-written questions ================= */
+const F=(s,c,a,ex)=>({t:'fill',s,c,a,ex});
+const M=(q,c,a,ex,jp)=>({t:'mc',q,c,a,ex,jp});
+const B=(zh,a,d,ex)=>({t:'build',zh,a,d,ex});
+const TF=(p,s,a,ex)=>({t:'mc',q:'根據文章，這句話對嗎？',jp:s,passage:p,c:['○ 對','× 不對'],a:a?'○ 對':'× 不對',ex});
+const PQ=(s,a,ex)=>({t:'mc',q:'是誰？',jp:s,passage:'mail',c:WHO,a:WHO[a],ex});
+
+const Q={
+want:[
+ F('わたしは {車|くるま}＿＿ {欲|ほ}しいです。',['が','を','に','で'],'が','「欲しい」是い形容詞，想要的東西用「が」表示。'),
+ F('{今|いま} {何|なに}が いちばん {欲|ほ}しいですか。……{新|あたら}しい ケータイ＿＿ {欲|ほ}しいです。',['が','を','は','へ'],'が','「名詞が 欲しいです」：想要的東西用「が」。'),
+ M('「想要孩子嗎？……不，不想要。」的回答怎麼說？',['いいえ、{欲|ほ}しくないです。','いいえ、{欲|ほ}しいじゃないです。','いいえ、{欲|ほ}しいません。','いいえ、{欲|ほ}しないです。'],'いいえ、{欲|ほ}しくないです。','「欲しい」是い形容詞，否定是去掉い加「くないです」。'),
+ F('すしを {食|た}べ＿＿です。（我想吃壽司）',['たい','たく','ほしい','ます'],'たい','動詞ます形去掉「ます」，接「たいです」表示「想做～」。'),
+ M('「我不想吃」的正確說法是？',['{食|た}べたくないです','{食|た}べたいじゃないです','{食|た}べないたいです','{食|た}べたいません'],'{食|た}べたくないです','「～たい」跟い形容詞一樣變化：たい → たくない。'),
+ F('きょうは {疲|つか}れましたから、{何|なに}も ＿＿ないです。',['したく','したい','しませ','して'],'したく','します → したい → したくない。「何も～ない」＝什麼都不～。'),
+ F('{用事|ようじ}が ありますから、5{時|じ}に うちへ ＿＿です。',['{帰|かえ}りたい','{帰|かえ}ります','{帰|かえ}って','{帰|かえ}り'],'{帰|かえ}りたい','有事情，所以5點想回家：帰ります → 帰りたいです。'),
+ F('あしたは {休|やす}みですから、{昼|ひる}まで ＿＿です。',['{寝|ね}たい','{寝|ね}ます','{寝|ね}り','{行|い}きたい'],'{寝|ね}たい','明天休假，想睡到中午：寝ます → 寝たいです。'),
+ F('{暑|あつ}いですから、どこも ＿＿です。',['{行|い}きたくない','{行|い}きたい','{行|い}きません','{行|い}って'],'{行|い}きたくない','「どこも＋否定」＝哪裡都不～。因為熱，哪裡都不想去。'),
+ M('想請對方喝咖啡，哪一句最自然？',['コーヒーを {飲|の}みませんか。','コーヒーが {飲|の}みたいですか。','コーヒーが {欲|ほ}しいですか。','コーヒーを {飲|の}みたいです。'],'コーヒーを {飲|の}みませんか。','「欲しいですか」「～たいですか」不能用來邀請對方，要用「～ませんか」或「コーヒーは いかがですか」。'),
+ M('下面哪一句不自然？',['ミラーさんは カメラが {欲|ほ}しいです。','わたしは カメラが {欲|ほ}しいです。','{何|なに}が {欲|ほ}しいですか。','わたしは {沖縄|おきなわ}へ {行|い}きたいです。'],'ミラーさんは カメラが {欲|ほ}しいです。','「欲しいです」「～たいです」不能用來敘述說話者和聽者以外第三者的慾望。'),
+ B('我想去沖繩。',['わたしは','{沖縄|おきなわ}へ','{行|い}きたいです'],['{行|い}きます','{欲|ほ}しいです'],'行きます → 行きたいです。'),
+ B('現在最想要什麼？',['{今|いま}','{何|なに}が','いちばん','{欲|ほ}しいですか'],['{何|なに}を','{食|た}べたいですか'],'想要的東西用「が」：何が 欲しいですか。'),
+],
+purpose:[
+ F('{図書館|としょかん}へ {本|ほん}を ＿＿に {行|い}きます。',['{借|か}り','{借|か}ります','{借|か}りて','{借|か}りたい'],'{借|か}り','目的用「ます形＋に」：借ります → 借りに 行きます。'),
+ F('{郵便局|ゆうびんきょく}へ {切手|きって}を ＿＿に {行|い}きました。',['{買|か}い','{買|か}います','{買|か}って','{買|か}う'],'{買|か}い','買います → 買いに 行きました。'),
+ F('デパートへ ＿＿に {行|い}きたいです。',['{買|か}い{物|もの}','{買|か}い{物|もの}し','{買|か}い{物|もの}します','{買|か}い{物|もの}を'],'{買|か}い{物|もの}','「名詞します」的動詞，用「名詞に 行きます」：買い物します → 買い物に。'),
+ F('{暑|あつ}いですから、プールへ ＿＿に {行|い}きたいです。',['{泳|およ}ぎ','{泳|およ}いで','{泳|およ}ぎます','{泳|およ}ぐ'],'{泳|およ}ぎ','泳ぎます → 泳ぎに 行きます。'),
+ F('{喫茶店|きっさてん}へ コーヒーを {飲|の}み＿＿ {行|い}きます。',['に','を','で','へ'],'に','「去做某事」的目的用「に」。'),
+ F('{日本|にほん}へ {美術|びじゅつ}の {勉強|べんきょう}＿＿ {来|き}ました。',['に','を','で','が'],'に','勉強します → 勉強に 来ました（來日本學美術）。'),
+ F('あした {京都|きょうと}の お{祭|まつ}り＿＿ {行|い}きます。',['に','を','で','が'],'に','節慶、音樂會等名詞放在「に」前面，表示去參加。'),
+ F('おなかが すきましたから、レストランへ {食事|しょくじ}＿＿ {行|い}きます。',['に','を','の','で'],'に','食事します → 食事に 行きます。'),
+ F('{週末|しゅうまつ}は どこへ {遊|あそ}び＿＿ {行|い}きたいですか。',['に','で','を','が'],'に','遊びます → 遊びに 行きます。'),
+ F('{日本|にほん}に 1{年|ねん} いますから、いろいろな {所|ところ}へ ＿＿に {行|い}きたいです。',['{旅行|りょこう}','{旅行|りょこう}し','{旅行|りょこう}します','{旅行|りょこう}を'],'{旅行|りょこう}','旅行します → 旅行に 行きます。いろいろな所＝各式各樣的地方。'),
+ M('「北海道へ スキーに 行きました」是什麼意思？',['去北海道滑雪了','在北海道買了滑雪板','想去北海道滑雪','從北海道回來了'],'去北海道滑雪了','スキーを します → スキーに 行きます。','{北海道|ほっかいどう}へ スキーに {行|い}きました。'),
+ B('我要和孩子一起去神戶看船。',['{子|こ}どもと','{神戸|こうべ}へ','{船|ふね}を','{見|み}に','{行|い}きます'],['{見|み}ます','{見|み}て'],'見ます → 見に 行きます。'),
+ B('去神戶吃印度料理。',['{神戸|こうべ}へ','インド{料理|りょうり}を','{食|た}べに','{行|い}きます'],['{食|た}べて','{食|た}べたい'],'目的：食べに 行きます。'),
+],
+someone:[
+ F('{冬休|ふゆやす}みは どこ＿＿ {行|い}きましたか。……ええ。{北海道|ほっかいどう}へ スキーに {行|い}きました。',['か','へ','も','を'],'か','不確定對方有沒有去，用「どこか（へ）」；回答是「ええ」，表示是 yes/no 問句。'),
+ F('{夏休|なつやす}みは どこ＿＿ {行|い}きたいですか。……{沖縄|おきなわ}へ {行|い}きたいです。',['へ','か','も','を'],'へ','確定要去、問去哪裡，用「どこへ」。回答是地點。'),
+ F('のどが かわきましたから、{何|なに}＿＿ {飲|の}みたいです。',['か','も','を','が'],'か','「何か」＝某樣東西，後面的「を」可以省略。口渴了，想喝點什麼。'),
+ F('きょうは {疲|つか}れましたから、{何|なに}＿＿ したくないです。',['も','か','を','が'],'も','「何も＋否定」＝什麼都不～。'),
+ F('{猫|ねこ}は {毎日|まいにち} {何|なに}も しません。どこ＿＿ {行|い}きません。',['も','か','へ','を'],'も','「どこも＋否定」＝哪裡都不去。'),
+ M('已經知道對方要吃東西，只是想問「要吃什麼」，要說？',['{何|なに}を {食|た}べますか。','{何|なに}か {食|た}べますか。','{何|なに}も {食|た}べますか。','どこか {食|た}べますか。'],'{何|なに}を {食|た}べますか。','「何か食べますか」是不確定對方要不要吃；已知一定會吃、問吃什麼用「何を」。'),
+ M('「{教室|きょうしつ}に {誰|だれ}か いますか」是什麼意思？',['教室裡有人嗎？','教室裡有誰？','教室裡沒有人。','誰在教室外面？'],'教室裡有人嗎？','「誰か」不確定有沒有人；「誰が いますか」才是問有誰。'),
+ M('「ご注文は？」的「ご」表示什麼？',['敬意','否定','疑問','複數'],'敬意','「ご～」表示敬意。ご注文は？＝您要點什麼？'),
+ F('{週末|しゅうまつ}は {何|なに}＿＿ しますか。……{子|こ}どもと {神戸|こうべ}へ {船|ふね}を {見|み}に {行|い}きます。',['を','か','も','が'],'を','回答說了具體要做的事，是問「做什麼」：何を しますか。'),
+ B('寒假有沒有去什麼地方呢？',['{冬休|ふゆやす}みは','どこか','{行|い}きましたか'],['どこへ','どこも'],'不確定有沒有去 → どこか（へ）。'),
+],
+conv13:[
+ F('もう 12{時|じ}ですよ。{昼|ひる}ごはんを {食|た}べ＿＿ {行|い}きませんか。',['に','て','を','で'],'に','食べに 行きませんか＝要不要去吃（午餐）？'),
+ M('ミラー說「きょうは 日本料理が 食べたいですね」。ミラー今天想吃什麼？',['日本料理','天婦羅','牛肉蓋飯','印度料理'],'日本料理','日本料理が 食べたい：想吃的東西可以用「が」。'),
+ M('「つるや」是什麼？',['日本餐館的名字','車站的名字','公司的名字','人的名字'],'日本餐館的名字','山田說「つるや」へ 行きましょう。'),
+ M('店員說「ご注文は？」意思是？',['您要點什麼？','您要付錢嗎？','您幾位？','請稍等。'],'您要點什麼？','ご注文は？＝您要點什麼？'),
+ M('「少々 お待ち ください」是什麼意思？',['請稍等','請慢用','請分開算','請再說一次'],'請稍等','少々（しょうしょう）＝稍微，お待ち ください＝請等。','{少々|しょうしょう} お{待|ま}ち ください。'),
+ M('「1,680円で ございます」的「でございます」是？',['「です」的禮貌說法','「ですか」的過去式','表示否定','表示請求'],'「です」的禮貌說法','店員對客人說話用更禮貌的「でございます」。'),
+ M('「別々に お願いします」是什麼意思？',['請分開算','請一起算','請快一點','請給我收據'],'請分開算','別々に（べつべつに）＝分別、各自。','{別々|べつべつ}に お{願|ねが}いします。'),
+ M('天婦羅套餐和牛肉蓋飯一共1,680日圓。天婦羅套餐是多少？',['980円','700円','1,680円','880円'],'980円','てんぷら定食は 980円、牛どんは 700円です。'),
+ B('中午了，要不要去吃午餐？',['{昼|ひる}ごはんを','{食|た}べに','{行|い}きませんか'],['{食|た}べて','{行|い}きましょうか'],'食べに 行きませんか：邀請對方一起去吃。'),
+ B('不好意思，請分開算。',['すみません。','{別々|べつべつ}に','お{願|ねが}いします'],['いっしょに','ください'],'別々に お願いします。'),
+],
+request:[
+ F('すみませんが、ボールペンを ＿＿ ください。',['{貸|か}して','{貸|か}し','{貸|か}します','{貸|か}って'],'{貸|か}して','貸します → 貸して（し → して）。て形＋ください＝請～。'),
+ F('{時間|じかん}が ありませんから、＿＿ ください。',['{急|いそ}いで','{急|いそ}いて','{急|いそ}ぎて','{急|いそ}んで'],'{急|いそ}いで','急ぎます：ぎ → いで。'),
+ F('{今|いま} {忙|いそが}しいですから、また あとで ＿＿ ください。',['{来|き}て','{来|き}って','{来|き}ます','{来|き}いて'],'{来|き}て','来ます（III類）→ 来て。'),
+ F('もう {少|すこ}し ゆっくり ＿＿ ください。',['{話|はな}して','{話|はな}って','{話|はな}いて','{話|はな}んで'],'{話|はな}して','話します：し → して。もう少し ゆっくり＝再慢一點。'),
+ F('{寒|さむ}いですね。{窓|まど}を ＿＿ましょうか。',['{閉|し}め','{閉|し}めて','{閉|し}めます','{閉|し}まり'],'{閉|し}め','「ましょうか」接ます形（去掉ます）：閉めます → 閉めましょうか。'),
+ F('{荷物|にもつ}が {多|おお}いですね。1つ ＿＿ましょうか。……すみません。お{願|ねが}いします。',['{持|も}ち','{持|も}って','{持|も}ちます','{持|も}つ'],'{持|も}ち','持ちます → 持ちましょうか＝我幫你拿吧。'),
+ F('あしたも {来|き}ましょうか。……ええ、10{時|じ}に ＿＿ ください。',['{来|き}て','{来|き}ます','{来|き}','{来|き}ましょう'],'{来|き}て','對方提議「我明天也來吧」，回答「好，請10點來」：来て ください。'),
+ F('IMCに この レポートを {送|おく}りましょうか。……ええ、すぐ ＿＿ ください。',['{送|おく}って','{送|おく}りて','{送|おく}いて','{送|おく}んで'],'{送|おく}って','送ります：り → って。'),
+ M('對方說「{塩|しお}を {取|と}りましょうか」，你想說「不用了，謝謝」：',['いいえ、けっこうです。','ええ、お{願|ねが}いします。','はい、{取|と}って ください。','いいえ、{取|と}りません。'],'いいえ、けっこうです。','婉拒對方的好意：いいえ、けっこうです。'),
+ M('對方說「{電気|でんき}を {消|け}しましょうか」，你想說「好，麻煩你」：',['ええ、お{願|ねが}いします。','いいえ、けっこうです。','ええ、{消|け}しましょう。','はい、{消|け}します。'],'ええ、お{願|ねが}いします。','接受對方的好意：ええ、お願いします。'),
+ M('「どうぞ たくさん {食|た}べて ください」是哪種用法？',['勸誘（請多吃一點）','請求','指示','道歉'],'勸誘（請多吃一點）','て形ください可以表示指示、請求、勸誘。'),
+ M('「～ませんか」和「～ましょうか」的差別？',['ませんか是邀請對方一起做；ましょうか是我來為對方做','兩個完全一樣','ませんか是命令；ましょうか是請求','ましょうか是過去式'],'ませんか是邀請對方一起做；ましょうか是我來為對方做','荷物を 持ちましょうか＝我幫你拿行李吧。'),
+ B('不好意思，請教我這個漢字的唸法。',['すみませんが、','この {漢字|かんじ}の','{読|よ}み{方|かた}を','{教|おし}えて','ください'],['{教|おし}えます','{読|よ}み{方|かた}が'],'すみませんが、～て ください：向別人請求時加「すみませんが」比較客氣。'),
+ B('請用原子筆寫名字。',['ボールペンで','{名前|なまえ}を','{書|か}いて','ください'],['{書|か}きて','ボールペンを'],'書きます：き → いて。工具用「で」。'),
+ B('要我去車站接你嗎？',['{駅|えき}まで','{迎|むか}えに','{行|い}きましょうか'],['{迎|むか}えて','{行|い}きませんか'],'迎えに 行きましょうか：我去接你吧。'),
+],
+progress:[
+ F('ミラーさんは {今|いま} {電話|でんわ}を ＿＿ います。',['かけて','かけ','かけます','かけって'],'かけて','て形＋います＝正在～。かけます（II類）→ かけて。'),
+ F('{雨|あめ}＿＿ {降|ふ}って います。',['が','を','は','に'],'が','直接描述看到的現象，主語用「が」：雨が 降って います。'),
+ M('「{今|いま} {雨|あめ}が {降|ふ}って いますか」……「不，沒在下。」',['いいえ、{降|ふ}って いません。','いいえ、{降|ふ}りません。','いいえ、{降|ふ}って いないです。','いいえ、{降|ふ}りませんでした。'],'いいえ、{降|ふ}って いません。','ています的否定是「ていません」。'),
+ F('{佐藤|さとう}さんは {今|いま} {会議室|かいぎしつ}で {松本|まつもと}さんと ＿＿ います。',['{話|はな}して','{話|はな}って','{話|はな}しって','{話|はな}します'],'{話|はな}して','話します → 話して います（正在講話）。'),
+ F('サントスさんは {今|いま} {何|なに}を して いますか。……プールで ＿＿ います。',['{泳|およ}いで','{泳|およ}いて','{泳|およ}って','{泳|およ}ぎて'],'{泳|およ}いで','泳ぎます：ぎ → いで。'),
+ F('{雨|あめ}が ＿＿ いますね。タクシーを {呼|よ}びましょうか。',['{降|ふ}って','{降|ふ}りて','{降|ふ}んで','{降|ふ}いて'],'{降|ふ}って','降ります（ふります）：り → って。'),
+ F('テレーザちゃんは どこですか。……2{階|かい}です。{太郎|たろう}ちゃんと ＿＿ いますよ。',['{遊|あそ}んで','{遊|あそ}びて','{遊|あそ}って','{遊|あそ}いで'],'{遊|あそ}んで','遊びます：び → んで。'),
+ F('{山田|やまだ}さんは {今|いま} {昼|ひる}ごはんを ＿＿ います。',['{食|た}べて','{食|た}べって','{食|た}んで','{食|た}べ'],'{食|た}べて','食べます（II類）→ 食べて。'),
+ M('「ミラーさんが いませんね」是什麼意思？',['米勒先生不在呢','米勒先生在這裡','米勒先生去哪裡了？','米勒先生在等你'],'米勒先生不在呢','看到現象直接描述，用「が」。','ミラーさんが いませんね。'),
+ F('{喫茶店|きっさてん}＿＿ {入|はい}ります。',['に','を','で','が'],'に','進入某處用「に」：喫茶店に 入ります。'),
+ F('{喫茶店|きっさてん}＿＿ {出|で}ます。',['を','に','で','へ'],'を','離開某處用「を」：喫茶店を 出ます。'),
+ B('米勒先生現在正在讀報告。',['ミラーさんは','{今|いま}','レポートを','{読|よ}んで','います'],['{読|よ}みて','ください'],'読みます：み → んで。'),
+ B('卡莉娜小姐在畫花。',['カリナさんは','{花|はな}を','かいて','います'],['かって','かきて'],'かきます：き → いて。'),
+],
+conv14:[
+ M('「みどり町まで お願いします」是什麼意思？',['請到綠町','我住在綠町','綠町在哪裡？','我從綠町來'],'請到綠町','搭計程車說目的地：～まで お願いします。','みどり{町|ちょう}まで お{願|ねが}いします。'),
+ F('すみません。あの {信号|しんごう}＿＿ {右|みぎ}へ {曲|ま}がって ください。',['を','に','で','が'],'を','在紅綠燈（經過的地點）轉彎用「を」。'),
+ F('すみません。あの {信号|しんごう}を {右|みぎ}＿＿ {曲|ま}がって ください。',['へ','を','で','が'],'へ','方向用「へ」：右へ 曲がります。'),
+ M('「ええ」和「はい」的差別？',['ええ語氣較柔和、口語；はい用在正式場合或對長輩','完全一樣','ええ是否定','はい比較口語'],'ええ語氣較柔和、口語；はい用在正式場合或對長輩','課本會話裡卡莉娜回答司機用「ええ」。'),
+ F('ええ、まっすぐ ＿＿ ください。',['{行|い}って','{行|い}いて','{行|い}きて','{行|い}んで'],'{行|い}って','行きます是例外：行って。まっすぐ＝直直地。'),
+ F('あの {花屋|はなや}の {前|まえ}で ＿＿ ください。',['{止|と}めて','{止|と}めって','{止|と}まて','{止|と}めんで'],'{止|と}めて','止めます（II類）→ 止めて。'),
+ M('「これで お願いします」是什麼意思？',['我用這個付錢','請給我這個','這個多少錢？','請收下這個禮物'],'我用這個付錢','付錢時遞出鈔票說：これで お願いします。'),
+ M('車資1,800日圓，卡莉娜付了5,000日圓。找零是？',['3,200円','3,800円','1,800円','2,200円'],'3,200円','3,200円の お釣りです。お釣り＝零錢。'),
+ M('「さあ、行きましょう」的「さあ」是？',['那麼（催促、提議）','咦？','不好意思','真的嗎'],'那麼（催促、提議）','さあ：用於提議、催促做某事時。'),
+ B('不好意思，請在那個紅綠燈右轉。',['すみません。','あの {信号|しんごう}を','{右|みぎ}へ','{曲|ま}がって','ください'],['{曲|ま}がりて','{左|ひだり}へ'],'曲がります：り → って。'),
+ B('請把護照給我看。',['パスポートを','{見|み}せて','ください'],['{見|み}て','{見|み}せって'],'見せます（II類）→ 見せて。見せます＝給～看。'),
+],
+reading:[
+ TF('dog','わたしは {奥|おく}さんと {散歩|さんぽ}や {買|か}い{物|もの}に {行|い}きます。',true,'文中：毎朝 奥さんと 散歩に 行きます……奥さんと 買い物に 行きます。'),
+ TF('dog','テレーザちゃんは わたしと いっしょに {学校|がっこう}から {帰|かえ}ります。',false,'午後狗去學校接テレーザ，然後一起去公園玩，不是直接回家。'),
+ TF('dog','サントスさんの {家族|かぞく}は {週末|しゅうまつ} {近|ちか}くの {公園|こうえん}へ {遊|あそ}びに {行|い}きます。',false,'週末是開車去「遠い所」（很遠的地方）玩。'),
+ TF('dog','{猫|ねこ}は わたしより {暇|ひま}です。',true,'貓每天什麼都不做，狗從早忙到晚。「AはBより～」＝A比B～。'),
+ TF('dog','{犬|いぬ}の {生活|せいかつ}は {猫|ねこ}の {生活|せいかつ}より {休|やす}みが {多|おお}いです。',false,'狗說「休みが 全然 ありません」，完全沒有休息。'),
+ M('トモ（狗）最想做什麼？',['和貓一起休息','去公園玩','去很遠的地方','和奧太太去買東西'],'和貓一起休息','わたしは 猫と いっしょに 休みたいです。',null),
+ PQ('この メールを {書|か}きました。',0,'署名是山田友子。'),
+ PQ('この メールを もらいました。',3,'信的開頭是「マリアさん」。'),
+ PQ('{毎日|まいにち} {泳|およ}ぎます。',1,'太郎は 毎日 泳ぎに 行きます。'),
+ PQ('{週末|しゅうまつ}に {友子|ともこ}さんの {両親|りょうしん}の うちへ {来|き}ます。',2,'週末に 夫も 来ます：友子的先生一郎週末會來。'),
+ PQ('マリアさんと ジョゼさんと テレーザちゃんを {駅|えき}まで {迎|むか}えに {行|い}きます。',0,'寫信的友子說：駅まで 車で 迎えに 行きます。'),
+]};
+Q.reading.forEach(q=>{if(q.t==='mc'&&!q.passage&&q.q.startsWith('トモ'))q.passage='dog'});
+
+/* ================= notes ================= */
+const ex=(j,z)=>`<div class="ex">${rb(j)}<span>${z}</span></div>`;
+const vocabTable=pool=>`<div class="tbl"><table><tr><th>日文</th><th>中文</th></tr>${pool.map(w=>`<tr><td class="j">${rb(jw(w))}</td><td>${w.zh}</td></tr>`).join('')}</table></div>`;
+const dlg=lines=>`<div class="dlg">${lines.map(([s,j,z])=>`<b>${rb(s)}</b><div>${rb(j)}<span>${z}</span></div>`).join('')}</div>`;
+const NOTES={
+want:`<h4>1. 名詞が 欲しいです（想要～）</h4><p>「欲しい」是い形容詞，想要的東西（物、人）用「が」。</p>
+${ex('わたしは {友達|ともだち}が {欲|ほ}しいです。','我想交朋友。')}${ex('{子|こ}どもが {欲|ほ}しいですか。……いいえ、{欲|ほ}しくないです。','想要孩子嗎？……不，不想要。')}
+<h4>2. 動詞ます形＋たいです（想做～）</h4><p>ます形：去掉「ます」的部分（かいます → かい）。受詞可用「を」，有時用「が」。「～たい」跟い形容詞一樣變化。</p>
+<div class="tbl"><table><tr><th>ます形</th><th>想～</th><th>不想～</th></tr>
+<tr><td class="j">${rb('{食|た}べます')}</td><td class="j">${rb('{食|た}べたいです')}</td><td class="j">${rb('{食|た}べたくないです')}</td></tr>
+<tr><td class="j">${rb('{行|い}きます')}</td><td class="j">${rb('{行|い}きたいです')}</td><td class="j">${rb('{行|い}きたくないです')}</td></tr>
+<tr><td class="j">します</td><td class="j">したいです</td><td class="j">したくないです</td></tr></table></div>
+${ex('わたしは てんぷらを（が） {食|た}べたいです。','我想吃天婦羅。')}
+<div class="warn">註1：「欲しいです」「～たいです」不能用來說第三者的願望。<br>註2：不能用來邀請對方。請人喝咖啡要說「コーヒーは いかがですか」「コーヒーを 飲みませんか」。</div>`,
+purpose:`<h4>3. 場所へ ＋ ます形／名詞 ＋ に ＋ 行きます／来ます／帰ります</h4><p>「去／來／回 做某事」，目的用「に」表示。</p>
+${ex('{神戸|こうべ}へ インド{料理|りょうり}を {食|た}べに {行|い}きます。','去神戶吃印度料理。')}
+<p>「名詞します」（買い物します、勉強します）和「名詞を します」（釣りを します）→ 用「名詞に」。</p>
+${ex('{神戸|こうべ}へ {買|か}い{物|もの}に {行|い}きます。','去神戶買東西。')}${ex('{日本|にほん}へ {美術|びじゅつ}の {勉強|べんきょう}に {来|き}ました。','來日本學美術。')}
+<div class="warn">節慶、音樂會等名詞放在「に」前面時，表示去參加：あした 京都の お祭りに 行きます。</div>`,
+someone:`<h4>4. どこか／何か</h4><p>「どこか」＝某個地方，「何か」＝某樣東西。後面的「へ」「を」可以省略。</p>
+${ex('{冬休|ふゆやす}みは どこか［へ］ {行|い}きましたか。……はい。{北海道|ほっかいどう}へ スキーに {行|い}きました。','寒假有沒有去什麼地方？……有，去北海道滑雪了。')}
+${ex('のどが かわきましたから、{何|なに}か［を］ {飲|の}みたいです。','口渴了，想喝點什麼。')}
+<div class="warn">你的筆記：不確定對方有沒有去 → どこか；確定有去、問去哪 → どこへ。<br>何か 食べますか（不確定要不要吃）／何を 食べますか（已知會吃，問吃什麼）。<br>教室に 誰か いますか（有人嗎）／教室に 誰が いますか（有誰）。</div>
+<h4>何も／どこも ＋ 否定</h4>${ex('{何|なに}も したくないです。','什麼都不想做。')}${ex('どこも {行|い}きません。','哪裡都不去。')}
+<h4>5. ご～</h4><p>「ご」表示敬意：ご{注文|ちゅうもん}は？＝您要點什麼？</p>`,
+conv13:`<h4>會話：別々に お願いします（請分開算）</h4>`+dlg([
+ ['{山田|やまだ}','もう 12{時|じ}ですよ。{昼|ひる}ごはんを {食|た}べに {行|い}きませんか。','已經12點了。要不要去吃午餐？'],['ミラー','ええ。','好啊。'],
+ ['{山田|やまだ}','どこへ {行|い}きますか。','去哪裡呢？'],['ミラー','そうですね。きょうは {日本料理|にほんりょうり}が {食|た}べたいですね。','嗯……今天想吃日本料理。'],
+ ['{山田|やまだ}','じゃ、「つるや」へ {行|い}きましょう。','那去「鶴屋」吧。'],['{店|みせ}の {人|ひと}','ご{注文|ちゅうもん}は？','您要點什麼？'],
+ ['ミラー','わたしは てんぷら{定食|ていしょく}。','我要天婦羅套餐。'],['{山田|やまだ}','わたしは {牛|ぎゅう}どん。','我要牛肉蓋飯。'],
+ ['{店|みせ}の {人|ひと}','てんぷら{定食|ていしょく}と {牛|ぎゅう}どんですね。{少々|しょうしょう} お{待|ま}ち ください。','天婦羅套餐和牛肉蓋飯。請稍等。'],
+ ['{店|みせ}の {人|ひと}','1,680{円|えん}で ございます。','一共1,680日圓。'],['ミラー','すみません。{別々|べつべつ}に お{願|ねが}いします。','不好意思，請分開算。'],
+ ['{店|みせ}の {人|ひと}','はい。てんぷら{定食|ていしょく}は 980{円|えん}、{牛|ぎゅう}どんは 700{円|えん}です。','好的。天婦羅套餐980日圓，牛肉蓋飯700日圓。']]),
+group:`<h4>動詞的三種類型</h4><div class="tbl"><table><tr><th>類型</th><th>ます前面的音</th><th>例</th></tr>
+<tr><td>I 類</td><td>い段</td><td class="j">か<u>き</u>ます、の<u>み</u>ます</td></tr>
+<tr><td>II 類</td><td>大部分是え段，少數是い段</td><td class="j">た<u>べ</u>ます、み<u>せ</u>ます、<u>み</u>ます</td></tr>
+<tr><td>III 類</td><td>します、名詞＋します、きます</td><td class="j">します、さんぽします、きます</td></tr></table></div>
+<div class="warn">い段的II類要特別記：見ます、起きます、借ります、います。<br>「入ります」「帰ります」「降ります（ふります）」雖然長得像，但都是I類。</div>`,
+te:`<h4>動詞て形</h4><p>I類看ます前面的音：</p><div class="tbl"><table><tr><th>ます前</th><th>變成</th><th>例</th></tr>
+<tr><td class="j">い・ち・り</td><td class="j">って</td><td class="j">${rb('{買|か}います → {買|か}って')}<br>${rb('{待|ま}ちます → {待|ま}って')}<br>${rb('{帰|かえ}ります → {帰|かえ}って')}</td></tr>
+<tr><td class="j">み・び・に</td><td class="j">んで</td><td class="j">${rb('{飲|の}みます → {飲|の}んで')}<br>${rb('{呼|よ}びます → {呼|よ}んで')}</td></tr>
+<tr><td class="j">き</td><td class="j">いて</td><td class="j">${rb('{書|か}きます → {書|か}いて')}</td></tr>
+<tr><td class="j">ぎ</td><td class="j">いで</td><td class="j">${rb('{急|いそ}ぎます → {急|いそ}いで')}</td></tr>
+<tr><td class="j">し</td><td class="j">して</td><td class="j">${rb('{貸|か}します → {貸|か}して')}</td></tr></table></div>
+<div class="warn">例外：${rb('{行|い}きます → {行|い}って')}（不是行いて）</div>
+<p>II類、III類：ます直接換成て。${rb('{食|た}べます → {食|た}べて、{見|み}ます → {見|み}て、{来|き}ます → {来|き}て、します → して')}</p>
+<p>你的筆記：て形看起來很像時，回到ます形看——有「っ／ん／い」的是I類，直接加て的是II類。</p>`,
+request:`<h4>動詞て形 ください（請～）</h4><p>用於指示、請求、勸誘。請求別人時常和「すみませんが」一起用，比較客氣。</p>
+${ex('すみませんが、この {漢字|かんじ}の {読|よ}み{方|かた}を {教|おし}えて ください。','不好意思，請教我這個漢字的唸法。（請求）')}
+${ex('ボールペンで {名前|なまえ}を {書|か}いて ください。','請用原子筆寫上名字。（指示）')}${ex('どうぞ たくさん {食|た}べて ください。','請多吃一點。（勸誘）')}
+<h4>動詞ます形 ましょうか（我來～吧）</h4><p>說話者提出要為對方做某事。</p>
+${ex('{傘|かさ}を {貸|か}しましょうか。……すみません。お{願|ねが}いします。','傘借給你吧！……謝謝，麻煩你了。')}${ex('{荷物|にもつ}を {持|も}ちましょうか。……いいえ、けっこうです。','我幫你拿行李吧。……不，不用了。')}
+<div class="warn">～ませんか：邀請對方（一起）做；～ましょうか：我來為你做。</div>
+<h4>すみませんが</h4><p>向別人搭話時的「が」是開場白的輕微接續：すみませんが、塩を 取って ください。</p>`,
+progress:`<h4>動詞て形 います（正在～）</h4>${ex('ミラーさんは {今|いま} {電話|でんわ}を かけて います。','米勒先生正在打電話。')}
+${ex('{今|いま} {雨|あめ}が {降|ふ}って いますか。……はい、{降|ふ}って います。／いいえ、{降|ふ}って いません。','現在正在下雨嗎？……對，正在下。／不，沒在下。')}
+<h4>名詞が 動詞</h4><p>直接描述眼睛、耳朵感受到的現象，或客觀傳達某件事時，主語用「が」。</p>${ex('{雨|あめ}が {降|ふ}って います。','正在下雨。')}${ex('ミラーさんが いませんね。','米勒先生不在呢。')}
+<div class="warn">喫茶店<b>に</b> 入ります（進入）↔ 喫茶店<b>を</b> 出ます（離開）</div>`,
+conv14:`<h4>會話：みどり町まで お願いします（請到綠町）</h4>`+dlg([
+ ['カリナ','みどり{町|ちょう}まで お{願|ねが}いします。','請到綠町。'],['{運転手|うんてんしゅ}','はい。','好的。'],
+ ['カリナ','すみません。あの {信号|しんごう}を {右|みぎ}へ {曲|ま}がって ください。','不好意思，請在那個紅綠燈右轉。'],['{運転手|うんてんしゅ}','{右|みぎ}ですね。','右轉是吧。'],['カリナ','ええ。','對。'],
+ ['{運転手|うんてんしゅ}','まっすぐですか。','直走嗎？'],['カリナ','ええ、まっすぐ {行|い}って ください。','對，請直走。'],
+ ['カリナ','あの {花屋|はなや}の {前|まえ}で {止|と}めて ください。','請在那家花店前面停。'],['{運転手|うんてんしゅ}','はい。1,800{円|えん}です。','好的。1,800日圓。'],
+ ['カリナ','これで お{願|ねが}いします。','我用這個付。'],['{運転手|うんてんしゅ}','3,200{円|えん}の お{釣|つ}りです。ありがとう ございました。','找您3,200日圓。謝謝。']]),
+reading:`<h4>${PASS.dog.t}</h4><div class="ex">${rb(PASS.dog.x)}</div><h4>${PASS.mail.t}</h4><div class="ex">${rb(PASS.mail.x)}</div>`
+};
+
+/* ================= course ================= */
+const UNITS=[
+ {cls:'',small:'第 13 課',title:'{別々|べつべつ}に お{願|ねが}いします',sub:'請分開算',lessons:[
+  {id:'v13a',g:'語',name:'單字 1：動詞・形容詞',kind:'vocab',pool:v13a,desc:'遊びます、欲しい、広い……'},
+  {id:'v13b',g:'語',name:'單字 2：名詞・會話用語',kind:'vocab',pool:v13b,desc:'週末、定食、別々に……'},
+  {id:'want',g:'文',name:'欲しい／～たい',kind:'custom',desc:'想要～、想做～'},
+  {id:'purpose',g:'文',name:'～に 行きます',kind:'custom',desc:'去做某事（目的）'},
+  {id:'someone',g:'文',name:'どこか・何か・何も',kind:'custom',desc:'某處、某物、什麼都不'},
+  {id:'conv13',g:'話',name:'會話：別々に',kind:'custom',desc:'在餐廳點餐、分開結帳'}]},
+ {cls:'u2',small:'第 14 課',title:'みどり{町|ちょう}まで お{願|ねが}いします',sub:'請到綠町',lessons:[
+  {id:'v14a',g:'語',name:'單字 1：動詞',kind:'vocab',pool:v14a,desc:'つけます、待ちます、手伝います……'},
+  {id:'v14b',g:'語',name:'單字 2：名詞・副詞',kind:'vocab',pool:v14b,desc:'住所、まっすぐ、あとで……'},
+  {id:'group',g:'類',name:'動詞分類 I・II・III',kind:'group',desc:'看ます前面的音判斷類型'},
+  {id:'te',g:'て',name:'て形變化',kind:'te',desc:'って・んで・いて・いで・して'},
+  {id:'request',g:'文',name:'～てください／～ましょうか',kind:'custom',desc:'請～、我來～吧'},
+  {id:'progress',g:'文',name:'～ています',kind:'custom',desc:'正在～、名詞が動詞'},
+  {id:'conv14',g:'話',name:'會話：搭計程車',kind:'custom',desc:'みどり町まで お願いします'}]},
+ {cls:'u3',small:'綜合',title:'{読|よ}む・{覚|おぼ}える',sub:'閱讀、參考詞彙、錯題複習',lessons:[
+  {id:'reading',g:'読',name:'讀解：狗的生活・電子郵件',kind:'custom',desc:'課本第13、14課問題'},
+  {id:'vCity',g:'町',name:'參考詞彙：城市裡',kind:'vocab',pool:vCity,desc:'博物館、交番、八百屋……'},
+  {id:'vStation',g:'駅',name:'參考詞彙：車站',kind:'vocab',pool:vStation,desc:'改札口、片道、往復……'},
+  {id:'mix',g:'混',name:'綜合挑戰',kind:'mix',desc:'兩課文法隨機出題'},
+  {id:'review',g:'復',name:'錯題複習',kind:'review',desc:'練習你答錯過的題目'}]}];
+const ALL=UNITS.flatMap(u=>u.lessons);
+const LMAP=Object.fromEntries(ALL.map(l=>[l.id,l]));
+
+/* ================= state ================= */
+const KEY='jp1314-dojo-v1';
+let S={xp:0,done:{},wrong:[],streak:0,last:'',furi:true};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(S,s)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const day=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+
+/* ================= question generation ================= */
+function vocabQs(pool){
+  const words=shuffle(pool),out=[];
+  out.push({t:'match',pairs:pick(pool,5)});
+  words.slice(0,8).forEach((w,i)=>{
+    const others=pool.filter(x=>x!==w);
+    const r=i%3, key='w:'+w.r;
+    if(r===0) out.push({t:'mc',key,q:'這是什麼意思？',jp:jw(w),say:jw(w),c:shuffle([w.zh,...pick(others,3).map(x=>x.zh)]),a:w.zh,ex:`${jw(w)}＝${w.zh}`});
+    else if(r===1) out.push({t:'mc',key,q:`「${w.zh}」的日文是？`,jpc:true,c:shuffle([jw(w),...pick(others,3).map(jw)]),a:jw(w),ex:`${jw(w)}＝${w.zh}`});
+    else if(w.k){const ks=others.filter(x=>x.k);out.push({t:'mc',key,q:'這個詞怎麼唸？',jp:w.k,noruby:true,say:jw(w),jpc:true,c:shuffle([w.r,...pick(ks.length>=3?ks:others,3).map(x=>x.r)]),a:w.r,ex:`${jw(w)}＝${w.zh}`});}
+    else out.push({t:'mc',key,q:'這是什麼意思？',jp:jw(w),say:jw(w),c:shuffle([w.zh,...pick(others,3).map(x=>x.zh)]),a:w.zh,ex:`${jw(w)}＝${w.zh}`});
+  });
+  out.push({t:'match',pairs:pick(pool,5)});
+  return out;
+}
+const VBM=Object.fromEntries(VB.map(v=>[v.r,v]));
+function groupQ(v){return{t:'mc',key:'g:'+v.r,q:'這個動詞是哪一類？',jp:jw(v),say:jw(v),c:['I 類','II 類','III 類'],fixed:true,a:['I 類','II 類','III 類'][v.g-1],ex:groupWhy(v)}}
+function teQ(v){const c=teWord(v),right=v.k?`{${c.k}|${c.r}}`:c.r;
+  return{t:'mc',key:'te:'+v.r,q:'て形是？',jp:jw(v),say:jw(v),jpc:true,c:shuffle([right,...teWrong(v)]),a:right,ex:teWhy(v)}}
+function customQs(id){return Q[id].map((q,i)=>Object.assign({key:`c:${id}:${i}`},q))}
+function byKey(k){
+  if(k.startsWith('c:')){const[,id,i]=k.split(':');const q=Q[id]&&Q[id][+i];return q?Object.assign({key:k},q):null}
+  if(k.startsWith('g:')){const v=VBM[k.slice(2)];return v?groupQ(v):null}
+  if(k.startsWith('te:')){const v=VBM[k.slice(3)];return v?teQ(v):null}
+  if(k.startsWith('w:')){const pool=[...v13a,...v13b,...v14a,...v14b,...vCity,...vStation];const w=pool.find(x=>x.r===k.slice(2));if(!w)return null;
+    const others=pool.filter(x=>x!==w);return{t:'mc',key:k,q:'這是什麼意思？',jp:jw(w),say:jw(w),c:shuffle([w.zh,...pick(others,3).map(x=>x.zh)]),a:w.zh,ex:`${jw(w)}＝${w.zh}`}}
+  return null}
+function buildLesson(l){
+  if(l.kind==='vocab')return vocabQs(l.pool);
+  if(l.kind==='group')return pick(VB,10).map(groupQ);
+  if(l.kind==='te')return pick(VB.filter(v=>v.r!=='します'||true),10).map(teQ);
+  if(l.kind==='custom')return l.id==='reading'?customQs(l.id):pick(customQs(l.id),Math.min(10,Q[l.id].length));
+  if(l.kind==='mix'){const ids=['want','purpose','someone','request','progress','conv13','conv14'];return shuffle([...pick(ids.flatMap(customQs),9),teQ(pick(VB,1)[0]),groupQ(pick(VB,1)[0])]).slice(0,12)}
+  if(l.kind==='review'){const qs=shuffle(S.wrong).map(byKey).filter(Boolean).slice(0,12);
+    return qs.length?qs:pick(['want','purpose','someone','request','progress'].flatMap(customQs),10)}
+  return[]}
+
+/* ================= home ================= */
+function nextId(){const n=ALL.find(l=>!S.done[l.id]&&l.kind!=='review');return n?n.id:'review'}
+function renderHome(){
+  $('#sStreak').textContent=S.streak;$('#sXp').textContent=S.xp;
+  document.body.classList.toggle('nofuri',!S.furi);$('#furiBtn').setAttribute('aria-pressed',String(!!S.furi));
+  const nx=nextId(),OFF=[0,46,70,46,0,-46,-70,-46];
+  $('#pathRoot').innerHTML=UNITS.map(u=>`<div class="unit ${u.cls}"><small>${u.small}</small><h2 class="jp">${rb(u.title)}</h2><p>${u.sub}</p></div>
+  <div class="path">${u.lessons.map((l,i)=>{const d=S.done[l.id],st=d?'★'.repeat(d):'';
+    const extra=l.kind==='review'?`（${S.wrong.length} 題）`:'';
+    return`<button class="node ${d?'done':''} ${l.id===nx?'next':''}" data-l="${l.id}" style="transform:translateX(${OFF[i%8]}px)"><span class="disc">${l.g}</span><span class="stars">${st}</span><span class="lbl">${l.name}${extra}</span></button>`}).join('')}</div>`).join('');
+}
+$('#pathRoot').addEventListener('click',e=>{const n=e.target.closest('[data-l]');if(n)openSheet(n.dataset.l)});
+$('#furiBtn').addEventListener('click',()=>{S.furi=!S.furi;save();renderHome()});
+
+function openSheet(id){const l=LMAP[id];
+  const note=l.kind==='vocab'?`<h4>單字表</h4>${vocabTable(l.pool)}`:(NOTES[id]||(l.kind==='mix'?'<p>從第13、14課的文法題中隨機出題，再加上動詞分類與て形。</p>':
+    l.kind==='review'?`<p>${S.wrong.length?'答錯的題目會收進這裡，答對一次就移出。':'目前沒有錯題，會改出一組文法複習題。'}</p>`:''));
+  $('#sheetBody').innerHTML=`<div class="kind">${l.g==='語'?'單字':l.g==='話'?'會話':l.g==='読'?'讀解':'練習'}</div><h3>${l.name}</h3><p class="desc">${l.desc}</p>
+   <div class="row"><button class="btn" id="startBtn">開始練習</button><button class="btn ghost" id="closeSheet">關閉</button></div><div class="note">${note}</div>`;
+  $('#bd').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
+  $('#startBtn').onclick=()=>{closeSheet();startLesson(id)};$('#closeSheet').onclick=closeSheet;$('#startBtn').focus()}
+function closeSheet(){$('#bd').hidden=true;$('#sheet').hidden=true}
+$('#bd').addEventListener('click',closeSheet);
+
+/* ================= lesson engine ================= */
+let L=null;
+function startLesson(id){
+  const qs=buildLesson(LMAP[id]);
+  L={id,queue:qs,total:qs.length,doneCount:0,hearts:5,correct:0,tries:0,start:Date.now(),requeued:new Set(),cur:null,phase:'answer',sel:null};
+  $('#home').hidden=true;$('#result').hidden=true;$('#lesson').hidden=false;window.scrollTo(0,0);nextQ()}
+function setProg(){$('#progBar').style.width=(L.doneCount/L.total*100)+'%';$('#hearts').textContent=L.hearts}
+function nextQ(){
+  setProg();
+  if(!L.queue.length)return finish(true);
+  L.cur=L.queue.shift();L.phase='answer';L.sel=null;
+  const f=$('#lfoot');f.className='lfoot';$('#fb').innerHTML='';
+  const go=$('#go');go.className='btn wide';go.textContent='檢查';go.disabled=true;
+  const q=L.cur,body=$('#qbody');
+  const pass=q.passage?`<details class="passage" open><summary>${PASS[q.passage].t}</summary><div>${rb(PASS[q.passage].x)}</div></details>`:'';
+  if(q.t==='mc'){
+    const keys='1234';
+    body.innerHTML=`${pass}<div class="qtype">${q.passage?'讀解':'選擇題'}</div><h2 class="qhead">${rb(q.q)}</h2>
+     ${q.jp?`<div class="prompt">${q.say||!q.noruby?sayBtn(q.say||q.jp):''}<div class="big">${q.noruby?esc(q.jp):rb(q.jp)}</div></div>`:''}
+     <div class="choices">${q.c.map((c,i)=>`<button class="tile ${q.jpc||/[ぁ-んァ-ン]/.test(base(c))&&!q.passage?'jpt':''}" data-i="${i}"><span class="k">${keys[i]||''}</span><span class="t">${rb(c)}</span></button>`).join('')}</div>`;
+    body.querySelectorAll('.tile').forEach(t=>t.onclick=()=>selectMc(+t.dataset.i));
+  }else if(q.t==='fill'){
+    const c=shuffle(q.c);q._c=c;
+    body.innerHTML=`<div class="qtype">填空</div><h2 class="qhead">選出正確的答案</h2>
+     <div class="prompt">${sayBtn(q.s.replace('＿＿',q.a))}<div class="sentence">${rb(q.s).replace('＿＿','<span class="blank" id="blank">　</span>')}</div></div>
+     <div class="choices two">${c.map((x,i)=>`<button class="tile jpt" data-i="${i}"><span class="k">${i+1}</span><span class="t">${rb(x)}</span></button>`).join('')}</div>`;
+    body.querySelectorAll('.tile').forEach(t=>t.onclick=()=>selectMc(+t.dataset.i));
+  }else if(q.t==='build'){
+    const toks=shuffle([...q.a,...(q.d||[])]);q._t=toks;L.sel=[];
+    body.innerHTML=`<div class="qtype">排出句子</div><h2 class="qhead">把這句話翻成日文</h2>
+     <div class="sentence" style="font-family:var(--zh);font-size:1.15rem;line-height:1.7">${q.zh}</div>
+     <div class="answer-line" id="aline"></div><div class="bank" id="bank">${toks.map((x,i)=>`<button class="chip" data-i="${i}">${rb(x)}</button>`).join('')}</div>`;
+    $('#bank').onclick=e=>{const c=e.target.closest('.chip');if(!c||L.phase!=='answer'||c.classList.contains('used'))return;
+      const i=+c.dataset.i;L.sel.push(i);c.classList.add('used');speak(toks[i]);drawLine()};
+    $('#aline').onclick=e=>{const c=e.target.closest('.chip');if(!c||L.phase!=='answer')return;
+      const i=+c.dataset.i;L.sel=L.sel.filter(x=>x!==i);$(`#bank .chip[data-i="${i}"]`).classList.remove('used');drawLine()};
+  }else if(q.t==='match'){
+    const left=shuffle(q.pairs),right=shuffle(q.pairs);q._m={left,right,a:null,b:null,left_n:q.pairs.length,miss:0};
+    body.innerHTML=`<div class="qtype">配對</div><h2 class="qhead">把日文和中文配成一對</h2>
+     <div class="match"><div class="col">${left.map(w=>`<button class="tile jpt" data-side="a" data-r="${esc(w.r)}"><span class="t">${rb(jw(w))}</span></button>`).join('')}</div>
+     <div class="col">${right.map(w=>`<button class="tile" data-side="b" data-r="${esc(w.r)}"><span class="t">${w.zh}</span></button>`).join('')}</div></div>`;
+    body.querySelector('.match').onclick=e=>{const t=e.target.closest('.tile');if(t)tapMatch(t)};
+    go.textContent='配對完成後繼續';
+  }
+}
+function drawLine(){const q=L.cur;$('#aline').innerHTML=L.sel.map(i=>`<button class="chip" data-i="${i}">${rb(q._t[i])}</button>`).join('');$('#go').disabled=!L.sel.length}
+function selectMc(i){if(L.phase!=='answer')return;L.sel=i;
+  $('#qbody').querySelectorAll('.tile').forEach(t=>t.classList.toggle('sel',+t.dataset.i===i));
+  const q=L.cur;
+  if(q.t==='fill'){$('#blank').innerHTML=rb(q._c[i])}
+  if(q.t==='mc'&&q.jpc)speak(q.c[i]);
+  $('#go').disabled=false}
+function tapMatch(t){const m=L.cur._m;if(t.classList.contains('gone'))return;const side=t.dataset.side;
+  if(side==='a')speak(t.dataset.r);
+  $('#qbody').querySelectorAll(`.tile[data-side="${side}"]`).forEach(x=>x.classList.remove('sel'));t.classList.add('sel');m[side]=t;
+  if(m.a&&m.b){const A=m.a,Bt=m.b;m.a=m.b=null;
+    if(A.dataset.r===Bt.dataset.r){[A,Bt].forEach(x=>{x.classList.remove('sel');x.classList.add('right');setTimeout(()=>{x.classList.remove('right');x.classList.add('gone')},350)});
+      if(--m.left_n===0){L.correct++;L.tries++;L.doneCount++;L.phase='done';setTimeout(()=>{showFb(true,'全部配對完成！','');},400)}}
+    else{m.miss++;[A,Bt].forEach(x=>{x.classList.remove('sel');x.classList.add('wrong','shake');setTimeout(()=>x.classList.remove('wrong','shake'),450)})}}}
+function check(){
+  const q=L.cur;let ok=false,ansHtml='';
+  if(q.t==='mc'){const chosen=q.c[L.sel];ok=chosen===q.a;
+    $('#qbody').querySelectorAll('.tile').forEach(t=>{const c=q.c[+t.dataset.i];if(c===q.a)t.classList.add('right');else if(+t.dataset.i===L.sel)t.classList.add('wrong')});
+    ansHtml=rb(q.a)}
+  else if(q.t==='fill'){ok=q._c[L.sel]===q.a;
+    $('#qbody').querySelectorAll('.tile').forEach(t=>{const c=q._c[+t.dataset.i];if(c===q.a)t.classList.add('right');else if(+t.dataset.i===L.sel)t.classList.add('wrong')});
+    $('#blank').innerHTML=rb(q.a);ansHtml=rb(q.s.replace('＿＿',q.a));speak(q.s.replace('＿＿',q.a))}
+  else if(q.t==='build'){const got=L.sel.map(i=>base(q._t[i])).join('').replace(/\s/g,''),want=q.a.map(base).join('').replace(/\s/g,'');ok=got===want;
+    ansHtml=rb(q.a.join(' '));speak(q.a.join(''))}
+  L.tries++;L.phase='done';
+  if(ok){L.correct++;L.doneCount++;if(q.key&&S.wrong.includes(q.key)&&LMAP[L.id].kind==='review'){S.wrong=S.wrong.filter(k=>k!==q.key)}}
+  else{L.hearts--;if(q.key&&!S.wrong.includes(q.key))S.wrong.push(q.key);
+    if(!L.requeued.has(q)){L.requeued.add(q);L.queue.push(q)}else L.doneCount++;}
+  save();setProg();showFb(ok,ok?pickPraise():'正確答案：',ansHtml,q.ex)}
+const PRAISE=['すばらしい！','いいですね！','正解！','その調子！','よくできました！'];
+const pickPraise=()=>PRAISE[Math.random()*PRAISE.length|0];
+function showFb(ok,title,ans,why){
+  const f=$('#lfoot');f.className='lfoot '+(ok?'ok':'bad');
+  const icon=ok?'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  $('#fb').innerHTML=`<h4 class="jp">${icon}${title}</h4>${ans&&!ok?`<div class="ans">${ans}</div>`:''}${why?`<div class="why">${rb(why)}</div>`:''}`;
+  const go=$('#go');go.disabled=false;go.textContent='繼續';go.className='btn wide '+(ok?'ok':'bad');go.focus({preventScroll:true});
+  L.phase='fb';if(L.hearts<=0)L.dead=true}
+$('#go').addEventListener('click',()=>{if(!L)return;
+  if(L.phase==='answer'&&L.cur.t!=='match')return check();
+  if(L.phase==='fb'){if(L.dead)return finish(false);nextQ()}});
+$('#quit').addEventListener('click',()=>{L=null;try{speechSynthesis.cancel()}catch(e){}$('#lesson').hidden=true;$('#home').hidden=false;renderHome()});
+document.addEventListener('keydown',e=>{if(!L||$('#lesson').hidden)return;
+  if(e.key==='Enter'){e.preventDefault();$('#go').click();return}
+  if(L.phase==='answer'&&/^[1-4]$/.test(e.key)&&(L.cur.t==='mc'||L.cur.t==='fill')){const i=+e.key-1;if(i<(L.cur.c.length))selectMc(i)}});
+
+function finish(won){
+  const secs=Math.round((Date.now()-L.start)/1000),acc=L.tries?Math.round(L.correct/L.tries*100):0;
+  let gained=0;
+  if(won){gained=10+L.hearts*2;S.xp+=gained;const stars=L.hearts>=5?3:L.hearts>=3?2:1;S.done[L.id]=Math.max(S.done[L.id]||0,stars);
+    const t=day(),y=day(new Date(Date.now()-864e5));if(S.last!==t){S.streak=S.last===y?S.streak+1:1;S.last=t}save()}
+  $('#lesson').hidden=true;$('#result').hidden=false;window.scrollTo(0,0);
+  $('#resBody').innerHTML=won?`<div class="seal">合格</div><h2>よくできました！</h2><p>${LMAP[L.id].name}　完成</p>
+    <div class="tiles3"><div class="st"><b style="color:var(--gold)">+${gained}</b><span>經驗值</span></div><div class="st"><b style="color:var(--ok)">${acc}%</b><span>正確率</span></div><div class="st"><b>${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</b><span>用時</span></div></div>
+    <button class="btn wide" id="resGo">繼續</button>`
+   :`<div class="seal fail">再</div><h2>ハートが なくなりました</h2><p>愛心用完了。看一下筆記再試一次吧。</p>
+    <div class="row" style="justify-content:center"><button class="btn" id="resRetry">再試一次</button><button class="btn ghost" id="resGo">回到課程</button></div>`;
+  const id=L.id;L=null;
+  $('#resGo').onclick=()=>{$('#result').hidden=true;$('#home').hidden=false;renderHome()};
+  const r=$('#resRetry');if(r)r.onclick=()=>startLesson(id)}
+
+renderHome();
+if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
+</script>
+
+</body>
+</html>
