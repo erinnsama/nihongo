@@ -1,6 +1,6 @@
 {
-  "name": "13・14課 日語道場",
-  "short_name": "日語道場",
+  "name": "日文學習區",
+  "short_name": "日文學習區",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
