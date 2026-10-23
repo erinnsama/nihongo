@@ -108,6 +108,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .seg button+button{border-left:2px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ai);color:#fff}
 .vtip{color:var(--muted);font-size:.85rem;margin:14px 0 0}
+.sync{border:2px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sync .who{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.sync .who small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.sync .btn{padding:9px 16px;font-size:.92rem}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .note{margin-top:18px;border-top:2px dashed var(--line);padding-top:6px}
 .note h4{font-family:var(--jp);font-size:1.05rem;margin:16px 0 4px;color:var(--ai)}
@@ -228,10 +232,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <div class="stat xp" title="經驗值"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span id="sXp">0</span></div>
     <button class="furi" id="bookBtn" title="答錯的題目">錯題本 <b id="bookN">0</b></button>
     <button class="furi" id="furiBtn" aria-pressed="true" title="顯示／隱藏假名標音">ふりがな</button>
-    <button class="furi ico" id="voiceBtn" title="朗讀語音設定" aria-label="朗讀語音設定"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+    <button class="furi ico" id="setBtn" title="設定：學習紀錄同步、朗讀語音" aria-label="設定"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </div></header>
   <div class="wrap" id="pathRoot"></div>
-  <div class="wrap foot-note">課本：第13課 別々に お願いします／第14課 みどり町まで お願いします／第15課 ご家族は？<br>進度只存在這個瀏覽器裡。</div>
+  <div class="wrap foot-note">課本：第13課 別々に お願いします／第14課 みどり町まで お願いします／第15課 ご家族は？<br><span id="syncNote">進度只存在這個瀏覽器裡。</span></div>
 </div>
 
 <div id="lesson" hidden>
@@ -275,9 +279,16 @@ const canSpeak='speechSynthesis' in window;
 const vRank=v=>(/natural|neural|online/i.test(v.name)?8:0)+(/google/i.test(v.name)?6:0)+(/enhanced|premium|siri|拡張|高品質/i.test(v.name)?4:0)+(v.localService===false?1:0);
 function jaVoices(){try{return speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang||'')).sort((a,b)=>vRank(b)-vRank(a))}catch(e){return[]}}
 function curVoice(){const vs=jaVoices();return vs.find(v=>v.voiceURI===S.voice)||vs[0]||null}
-function speak(t){try{if(!canSpeak)return;const u=new SpeechSynthesisUtterance(plain(t));u.lang='ja-JP';u.rate=S.rate||.9;
+/* pre-recorded neural audio (audio/<fnv1a>.mp3, list in audio/list.json); falls back to the device voice */
+const aKey=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')};
+let AUD=new Set();const AU=new Audio();AU.preload='auto';
+fetch('audio/list.json').then(r=>r.json()).then(a=>{AUD=new Set(a)}).catch(()=>{});
+function speakDevice(p){try{if(!canSpeak)return;const u=new SpeechSynthesisUtterance(p);u.lang='ja-JP';u.rate=S.rate||.9;
   const v=curVoice();if(v){u.voice=v;u.lang=v.lang}speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
-const sayBtn=(t,sm)=>canSpeak?`<button class="say${sm?' sm':''}" data-say="${esc(t)}" aria-label="朗讀">${SPK}</button>`:'';
+function speak(t,device){const p=plain(t).trim(),k=aKey(p);
+  if(device||S.src==='dev'||!AUD.has(k))return speakDevice(p);
+  try{if(canSpeak)speechSynthesis.cancel();AU.pause();AU.src='audio/'+k+'.mp3';AU.playbackRate=S.rate||.9;AU.play().catch(()=>speakDevice(p))}catch(e){speakDevice(p)}}
+const sayBtn=(t,sm)=>`<button class="say${sm?' sm':''}" data-say="${esc(t)}" aria-label="朗讀">${SPK}</button>`;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){e.stopPropagation();speak(b.dataset.say)}});
 const jw=w=>w.k?`{${w.k}|${w.r}}`:w.r;
 
@@ -678,7 +689,7 @@ const KEY='jp1314-dojo-v1';
 let S={xp:0,done:{},wrong:[],streak:0,last:'',furi:true,voice:'',rate:.9};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(S,s)}catch(e){}
 S.wrong=(S.wrong||[]).map(w=>typeof w==='string'?{k:w,n:1,t:Date.now()}:w);
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=(local)=>{if(!local){S.ts=Date.now();queuePush()}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const day=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 
 /* ================= question generation ================= */
@@ -747,24 +758,35 @@ const VSAMPLE='{駅|えき}まで どのくらい かかりますか。';
 const vLabel=v=>v.name.replace(/^Microsoft\s+/,'').replace(/\s*[-–]\s*Japanese.*$/i,'').replace(/\s*Online\s*\(Natural\)/i,'');
 function renderVoice(){
   const vs=jaVoices(),cur=curVoice();
+  const sync=!FB_CONFIG?'':`<div class="vh" style="margin-top:4px">學習紀錄同步</div><div class="sync">${USER
+    ?`<span class="who">${esc(USER.email||USER.displayName||'已登入')}<small>${esc(SYNC_MSG||'已同步，換裝置登入同一個帳號就能接續進度')}</small></span><button class="btn ghost" type="button" id="logoutBtn">登出</button>`
+    :`<span class="who">尚未登入<small>${esc(SYNC_MSG||'登入 Google 後，進度會存到雲端，手機和電腦都能接續')}</small></span><button class="btn" type="button" id="loginBtn">用 Google 登入</button>`}</div>`;
   const list=vs.length?vs.map((v,i)=>`<label class="vitem ${v===cur?'on':''}"><input type="radio" name="vc" value="${esc(v.voiceURI)}" ${v===cur?'checked':''}>
      <span class="vn jp">${esc(vLabel(v))}<small>${/natural|neural|online/i.test(v.name)?'線上自然語音（需要網路）':v.localService===false?'線上語音（需要網路）':'裝置內建'}</small></span>${vRank(v)>=4?'<span class="vtag">推薦</span>':''}
      <button class="say sm" type="button" data-vtest="${i}" aria-label="試聽">${SPK}</button></label>`).join('')
     :'<p class="vtip">這台裝置找不到日文語音。可以到系統設定新增日文語音後再回來。</p>';
-  $('#sheetBody').innerHTML=`<div class="kind">設定</div><h3>朗讀語音</h3><p class="desc">選一個聽起來最自然的日文聲音，按喇叭可以試聽。</p>
-   <div class="vlist">${list}</div>
+  $('#sheetBody').innerHTML=`<h3>設定</h3>${sync}
+   <div class="vh">朗讀語音</div><div class="seg vset">${[['hq','高品質錄音'],['dev','裝置語音']].map(([k,n])=>`<button type="button" data-src="${k}" aria-pressed="${(S.src||'hq')===k}">${n}</button>`).join('')}</div>
+   ${(S.src||'hq')==='hq'?`<label class="vitem on" style="margin-top:10px"><span class="vn jp">七海（日文神經語音）<small>預先錄好的自然日文發音，iPhone、Android、電腦聽起來都一樣</small></span><span class="vtag">推薦</span><button class="say sm" type="button" data-hqtest aria-label="試聽">${SPK}</button></label>`
+    :`<p class="desc" style="margin-top:10px">用這台裝置內建的聲音，按喇叭可以試聽。</p><div class="vlist">${list}</div>`}
    <div class="vh">語速</div><div class="seg">${RATES.map(([n,r])=>`<button type="button" data-rate="${r}" aria-pressed="${(S.rate||.9)===r}">${n}</button>`).join('')}</div>
-   <p class="vtip">語速「自然」最接近日本人平常說話的抑揚頓挫，放太慢語調會變平。<br>想要更自然的聲音：電腦用 Edge 開啟，可以選七海、圭太這兩個線上自然語音；iPhone 可到「設定 → 輔助使用 → 朗讀內容 → 聲音 → 日文」下載 Kyoko 或 Otoya 的「高品質」版本。</p>
+   <p class="vtip">語速「自然」最接近日本人平常說話的抑揚頓挫。${(S.src||'hq')==='hq'?'少數沒有錄到的句子會自動改用裝置語音。':'<br>想要更自然的聲音：電腦用 Edge 開啟，可以選七海、圭太；iPhone 可到「設定 → 輔助使用 → 朗讀內容 → 聲音 → 日文」下載 Kyoko 或 Otoya 的「高品質」版本。'}</p>
    <div class="row" style="margin-top:16px"><button class="btn ghost" id="closeSheet">完成</button></div>`;
   $('#closeSheet').onclick=closeSheet}
 function openVoice(){renderVoice();$('#bd').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0}
-$('#voiceBtn').addEventListener('click',openVoice);
+$('#setBtn').addEventListener('click',openVoice);
+const reVoice=()=>{if(!$('#sheet').hidden&&$('#sheetBody .vset'))renderVoice()};
 $('#sheetBody').addEventListener('click',e=>{
+  if(e.target.closest('#loginBtn')){login();return}
+  if(e.target.closest('#logoutBtn')){logout();return}
+  const sr=e.target.closest('[data-src]');
+  if(sr){S.src=sr.dataset.src;save(1);renderVoice();speak(VSAMPLE);return}
+  if(e.target.closest('[data-hqtest]')){e.preventDefault();speak(VSAMPLE);return}
   const t=e.target.closest('[data-vtest]');
-  if(t){e.preventDefault();const v=jaVoices()[+t.dataset.vtest];if(v){S.voice=v.voiceURI;save();renderVoice();speak(VSAMPLE)}return}
+  if(t){e.preventDefault();const v=jaVoices()[+t.dataset.vtest];if(v){S.voice=v.voiceURI;save(1);renderVoice();speak(VSAMPLE,true)}return}
   const r=e.target.closest('[data-rate]');
-  if(r){S.rate=+r.dataset.rate;save();renderVoice();speak(VSAMPLE)}});
-$('#sheetBody').addEventListener('change',e=>{if(e.target.name==='vc'){S.voice=e.target.value;save();renderVoice();speak(VSAMPLE)}});
+  if(r){S.rate=+r.dataset.rate;save(1);renderVoice();speak(VSAMPLE)}});
+$('#sheetBody').addEventListener('change',e=>{if(e.target.name==='vc'){S.voice=e.target.value;save(1);renderVoice();speak(VSAMPLE)}});
 $('#bd').addEventListener('click',closeSheet);
 
 /* ================= lesson engine ================= */
@@ -911,8 +933,42 @@ function boot(data){
 }
 try{window.claude?.hot?.snapshot?.(snap)}catch(e){}
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
-if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{if(!$('#sheet').hidden&&$('#sheetBody .vlist'))renderVoice()}}catch(e){}}
-else $('#voiceBtn').hidden=true;
+if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=reVoice}catch(e){}}
+/* ================= cloud sync (Firebase: Google login + Firestore doc progress/{uid}) ================= */
+const FB_CONFIG=null;   /* paste the Firebase web config object here to turn sync on */
+const FBV='https://www.gstatic.com/firebasejs/10.14.1/';
+const SYNCED=['xp','done','wrong','streak','last','furi'];   /* voice & rate stay per device */
+var FB=null,USER=null,SYNC_MSG="",pushT=0;   /* var: save() may run before this line */
+function syncUi(){
+  if(FB_CONFIG)$('#syncNote').textContent=USER?`進度已同步到 Google 帳號（${USER.email||''}）。`:'進度只存在這個瀏覽器裡。到右上角「設定」登入 Google，就能在不同裝置接續。';
+  reVoice()}
+function pickSync(o){const r={};SYNCED.forEach(k=>{if(o[k]!==undefined)r[k]=o[k]});return r}
+function mergeS(a,b){
+  const done={...a.done};Object.entries(b.done||{}).forEach(([k,v])=>done[k]=Math.max(done[k]||0,v));
+  const w={};[...(a.wrong||[]),...(b.wrong||[])].forEach(x=>{const o=w[x.k];w[x.k]=o?{k:x.k,n:Math.max(o.n,x.n),t:Math.max(o.t,x.t)}:x});
+  const later=(b.last||'')>(a.last||'')?b:a;
+  return{xp:Math.max(a.xp||0,b.xp||0),done,wrong:Object.values(w),last:later.last||'',streak:a.last===b.last?Math.max(a.streak||0,b.streak||0):later.streak||0,furi:a.furi}}
+function applyRemote(r){Object.assign(S,pickSync(r));S.ts=r.ts||Date.now();save(1);if(VIEW==='home')renderHome();else if(VIEW==='book')renderBook()}
+function queuePush(){if(!USER)return;clearTimeout(pushT);pushT=setTimeout(push,1500)}
+async function push(){if(!FB||!USER)return;
+  try{await FB.F.setDoc(FB.F.doc(FB.db,'progress',USER.uid),{...pickSync(S),ts:S.ts||Date.now()});SYNC_MSG=''}catch(e){SYNC_MSG='同步失敗，稍後會再試：'+(e.code||e.message)}syncUi()}
+async function pull(){if(!FB||!USER)return;
+  try{const d=await FB.F.getDoc(FB.F.doc(FB.db,'progress',USER.uid)),r=d.exists()?d.data():null;
+    if(S.uid!==USER.uid){if(r)applyRemote(mergeS(S,r));S.uid=USER.uid;save()}   /* first sync on this device: combine both sides */
+    else if(r&&(r.ts||0)>(S.ts||0))applyRemote(r);
+    else if(!r||(S.ts||0)>(r.ts||0))push();
+    SYNC_MSG=''}catch(e){SYNC_MSG='讀取雲端進度失敗：'+(e.code||e.message)}syncUi()}
+async function fbInit(){if(!FB_CONFIG)return;
+  try{const[{initializeApp},A,F]=await Promise.all(['app','auth','firestore'].map(m=>import(FBV+'firebase-'+m+'.js')));
+    const app=initializeApp(FB_CONFIG);FB={A,F,auth:A.getAuth(app),db:F.getFirestore(app)};
+    A.onAuthStateChanged(FB.auth,u=>{USER=u;syncUi();if(u)pull()});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()})}
+  catch(e){SYNC_MSG='同步功能載入失敗，請檢查網路';syncUi()}}
+async function login(){if(!FB)return;SYNC_MSG='登入中…';syncUi();
+  try{await FB.A.signInWithPopup(FB.auth,new FB.A.GoogleAuthProvider());SYNC_MSG=''}
+  catch(e){SYNC_MSG=e.code==='auth/popup-closed-by-user'?'':'登入失敗：'+(e.code||e.message)}syncUi()}
+async function logout(){if(!FB)return;await FB.A.signOut(FB.auth);SYNC_MSG='已登出，這台裝置上的進度還在';syncUi()}
+syncUi();fbInit();
 </script>
 
 </body>
