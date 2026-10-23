@@ -935,7 +935,8 @@ try{window.claude?.hot?.snapshot?.(snap)}catch(e){}
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=reVoice}catch(e){}}
 /* ================= cloud sync (Firebase: Google login + Firestore doc nihongoProgress/{uid}) ================= */
-const FB_CONFIG=null;   /* paste the Firebase web config object here to turn sync on */
+const FB_CONFIG={apiKey:'AIzaSyDY4qOeZp-jqOGmBDCvE-f0RLptotA5TgA',authDomain:'nihongo-f9ea7.firebaseapp.com',projectId:'nihongo-f9ea7',
+  storageBucket:'nihongo-f9ea7.firebasestorage.app',messagingSenderId:'34072397788',appId:'1:34072397788:web:949fec2b77e29ec9673119'};   /* web config is public by design; access is limited by Firestore rules */
 const FBV='https://www.gstatic.com/firebasejs/10.14.1/';
 const SYNCED=['xp','done','wrong','streak','last','furi'];   /* voice & rate stay per device */
 var FB=null,USER=null,SYNC_MSG="",pushT=0;   /* var: save() may run before this line */
