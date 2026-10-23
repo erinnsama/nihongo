@@ -934,7 +934,7 @@ function boot(data){
 try{window.claude?.hot?.snapshot?.(snap)}catch(e){}
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=reVoice}catch(e){}}
-/* ================= cloud sync (Firebase: Google login + Firestore doc progress/{uid}) ================= */
+/* ================= cloud sync (Firebase: Google login + Firestore doc nihongoProgress/{uid}) ================= */
 const FB_CONFIG=null;   /* paste the Firebase web config object here to turn sync on */
 const FBV='https://www.gstatic.com/firebasejs/10.14.1/';
 const SYNCED=['xp','done','wrong','streak','last','furi'];   /* voice & rate stay per device */
@@ -951,9 +951,9 @@ function mergeS(a,b){
 function applyRemote(r){Object.assign(S,pickSync(r));S.ts=r.ts||Date.now();save(1);if(VIEW==='home')renderHome();else if(VIEW==='book')renderBook()}
 function queuePush(){if(!USER)return;clearTimeout(pushT);pushT=setTimeout(push,1500)}
 async function push(){if(!FB||!USER)return;
-  try{await FB.F.setDoc(FB.F.doc(FB.db,'progress',USER.uid),{...pickSync(S),ts:S.ts||Date.now()});SYNC_MSG=''}catch(e){SYNC_MSG='同步失敗，稍後會再試：'+(e.code||e.message)}syncUi()}
+  try{await FB.F.setDoc(FB.F.doc(FB.db,'nihongoProgress',USER.uid),{...pickSync(S),ts:S.ts||Date.now()});SYNC_MSG=''}catch(e){SYNC_MSG='同步失敗，稍後會再試：'+(e.code||e.message)}syncUi()}
 async function pull(){if(!FB||!USER)return;
-  try{const d=await FB.F.getDoc(FB.F.doc(FB.db,'progress',USER.uid)),r=d.exists()?d.data():null;
+  try{const d=await FB.F.getDoc(FB.F.doc(FB.db,'nihongoProgress',USER.uid)),r=d.exists()?d.data():null;
     if(S.uid!==USER.uid){if(r)applyRemote(mergeS(S,r));S.uid=USER.uid;save()}   /* first sync on this device: combine both sides */
     else if(r&&(r.ts||0)>(S.ts||0))applyRemote(r);
     else if(!r||(S.ts||0)>(r.ts||0))push();
